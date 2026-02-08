@@ -223,6 +223,101 @@ algunos archivos solo necesitan existir.`,
     return saved || '90123130476df6cda0a395df774b0770145cd6a2600d7f20d5c0d40a828e8490'; // dinamarca2025
   });
 
+  // Security: Rate limiting and session
+  const [loginAttempts, setLoginAttempts] = useState(0);
+  const [loginBlocked, setLoginBlocked] = useState(false);
+  const [lastActivity, setLastActivity] = useState(Date.now());
+
+  // SUPABASE CONFIG
+  const [supabaseConfig, setSupabaseConfig] = useState(() => {
+    const saved = localStorage.getItem('dinamarca_supabase_config');
+    return saved ? JSON.parse(saved) : {
+      url: '',
+      anonKey: '',
+      enabled: false
+    };
+  });
+
+  const [supabaseClient, setSupabaseClient] = useState(null);
+  const [syncStatus, setSyncStatus] = useState('offline'); // offline, syncing, synced, error
+
+  // SUPABASE FUNCTIONS (usando fetch, sin librería)
+  const supabaseFetch = async (endpoint, method = 'GET', body = null) => {
+    if (!supabaseConfig.enabled || !supabaseConfig.url || !supabaseConfig.anonKey) {
+      return null;
+    }
+
+    try {
+      const options = {
+        method,
+        headers: {
+          'apikey': supabaseConfig.anonKey,
+          'Authorization': `Bearer ${supabaseConfig.anonKey}`,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=representation'
+        }
+      };
+
+      if (body) {
+        options.body = JSON.stringify(body);
+      }
+
+      const response = await fetch(`${supabaseConfig.url}/rest/v1/${endpoint}`, options);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Supabase error:', error);
+      setSyncStatus('error');
+      return null;
+    }
+  };
+
+  // Sync publicaciones to Supabase
+  const syncToSupabase = async () => {
+    if (!supabaseConfig.enabled) return;
+
+    setSyncStatus('syncing');
+    
+    try {
+      // Primero borrar todo
+      await supabaseFetch('publicaciones?select=*', 'DELETE');
+      
+      // Insertar todas las publicaciones
+      const result = await supabaseFetch('publicaciones', 'POST', publicaciones);
+      
+      if (result) {
+        setSyncStatus('synced');
+        setTimeout(() => setSyncStatus('offline'), 2000);
+      }
+    } catch (error) {
+      setSyncStatus('error');
+    }
+  };
+
+  // Load from Supabase
+  const loadFromSupabase = async () => {
+    if (!supabaseConfig.enabled) return;
+
+    setSyncStatus('syncing');
+    
+    try {
+      const data = await supabaseFetch('publicaciones?select=*');
+      
+      if (data && data.length > 0) {
+        setPublicaciones(data);
+        localStorage.setItem('dinamarca_publicaciones', JSON.stringify(data));
+        setSyncStatus('synced');
+        setTimeout(() => setSyncStatus('offline'), 2000);
+      }
+    } catch (error) {
+      setSyncStatus('error');
+    }
+  };
+
   const GeometricAnimation = () => {
     const [rotation, setRotation] = useState(0);
 
@@ -482,8 +577,8 @@ algunos archivos solo necesitan existir.`,
   const AboutMe = () => (
     <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
       <div className="max-w-2xl mx-auto">
-        <h1 className="font-mono text-white/30 text-xs sm:text-sm mb-6 sm:mb-8 tracking-widest">ABOUT_ME</h1>
-        <div className="font-mono text-white/90 text-base sm:text-lg leading-relaxed whitespace-pre-line lowercase">
+        <h1 className="font-mono text-white/40 text-sm sm:text-base mb-8 sm:mb-12 tracking-[0.3em] uppercase border-b border-white/10 pb-4">ABOUT_ME</h1>
+        <div className="font-mono text-white/90 text-lg sm:text-xl leading-[1.8] whitespace-pre-line lowercase tracking-wide">
           {aboutText}
         </div>
       </div>
@@ -493,13 +588,25 @@ algunos archivos solo necesitan existir.`,
   const Publicaciones = () => (
     <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
       <div className="max-w-4xl mx-auto">
-        <h1 className="font-mono text-white/30 text-xs sm:text-sm mb-8 sm:mb-12 tracking-widest">PUBLICACIONES</h1>
+        <h1 className="font-mono text-white/40 text-sm sm:text-base mb-8 sm:mb-12 tracking-[0.3em] uppercase border-b border-white/10 pb-4">PUBLICACIONES</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
           {publicaciones.filter(pub => !pub.hidden && !pub.draft).map(pub => (
             <article 
               key={pub.id} 
               onClick={() => setSelectedPublication(pub)}
-              className="border-l border-white/10 pl-4 sm:pl-8 hover:border-red-500/50 transition-all cursor-pointer group"
+              className="border-l-2 border-white/10 pl-4 sm:pl-8 hover:border-red-500 transition-all duration-500 cursor-pointer group relative"
+              style={{
+                boxShadow: '0 0 0 rgba(239, 68, 68, 0)',
+                transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 40px rgba(239, 68, 68, 0.5), 0 0 80px rgba(239, 68, 68, 0.2)';
+                e.currentTarget.style.transform = 'translateX(8px)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.boxShadow = '0 0 0 rgba(239, 68, 68, 0)';
+                e.currentTarget.style.transform = 'translateX(0)';
+              }}
             >
               {/* Hero image with dark gradient */}
               <div className="relative w-full h-48 sm:h-64 mb-4 sm:mb-6 overflow-hidden -ml-4 sm:-ml-8 group/hero">
@@ -514,7 +621,7 @@ algunos archivos solo necesitan existir.`,
                   {[...Array(12)].map((_, i) => (
                     <div
                       key={i}
-                      className="absolute w-1 h-1 bg-white/39 rounded-full"
+                      className="absolute w-1 h-1 bg-white/80 rounded-full"
                       style={{
                         left: `${3 + i * 8}%`,
                         bottom: '-10px',
@@ -525,7 +632,7 @@ algunos archivos solo necesitan existir.`,
                   {[...Array(6)].map((_, i) => (
                     <div
                       key={`red-${i}`}
-                      className="absolute w-1 h-1 bg-red-500/39 rounded-full"
+                      className="absolute w-1 h-1 bg-red-500/70 rounded-full"
                       style={{
                         left: `${10 + i * 15}%`,
                         bottom: '-10px',
@@ -595,18 +702,28 @@ algunos archivos solo necesitan existir.`,
                 ×
               </button>
 
-              {/* Hero image full */}
-              <div className="relative w-full h-64 sm:h-96 mb-8 sm:mb-12 overflow-hidden">
+              {/* Hero image full with parallax */}
+              <div className="relative w-full h-64 sm:h-96 mb-8 sm:mb-12 overflow-hidden group">
                 <img 
                   src={selectedPublication.heroImage} 
                   alt={selectedPublication.title}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                  style={{
+                    transform: `translateY(${window.scrollY * 0.3}px)`
+                  }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/50" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/50 transition-opacity group-hover:opacity-90" />
                 
-                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8">
-                  <div className="font-mono text-white/40 text-xs mb-2">{selectedPublication.date}</div>
-                  <h1 className="font-mono text-white text-2xl sm:text-4xl mb-4 lowercase">{selectedPublication.title}</h1>
+                {/* Animated gradient overlay */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-700 z-10"
+                  style={{
+                    background: 'linear-gradient(135deg, rgba(239,68,68,0.4) 0%, transparent 50%, rgba(239,68,68,0.3) 100%)'
+                  }}
+                />
+                
+                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 transform transition-transform duration-500 group-hover:translate-y-[-8px]">
+                  <div className="font-mono text-white/40 text-xs mb-2 transition-all duration-500 group-hover:text-red-500/70">{selectedPublication.date}</div>
+                  <h1 className="font-mono text-white text-2xl sm:text-4xl mb-4 lowercase transition-all duration-500 group-hover:text-red-50">{selectedPublication.title}</h1>
                 </div>
               </div>
 
@@ -726,7 +843,7 @@ algunos archivos solo necesitan existir.`,
     return (
       <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="font-mono text-white/30 text-xs sm:text-sm mb-8 sm:mb-12 tracking-widest">MULTIMEDIA</h1>
+          <h1 className="font-mono text-white/40 text-sm sm:text-base mb-8 sm:mb-12 tracking-[0.3em] uppercase border-b border-white/10 pb-4">MULTIMEDIA</h1>
           {allImages.length === 0 ? (
             <div className="font-mono text-white/30 text-sm text-center py-12">
               no hay imágenes. creá publicaciones con imágenes para verlas acá.
@@ -750,7 +867,7 @@ algunos archivos solo necesitan existir.`,
                 {[...Array(8)].map((_, i) => (
                   <div
                     key={i}
-                    className="absolute w-1 h-1 bg-white/39 rounded-full"
+                    className="absolute w-1 h-1 bg-white/80 rounded-full"
                     style={{
                       left: `${10 + i * 12}%`,
                       bottom: '-10px',
@@ -761,7 +878,7 @@ algunos archivos solo necesitan existir.`,
                 {[...Array(4)].map((_, i) => (
                   <div
                     key={`red-${i}`}
-                    className="absolute w-1 h-1 bg-red-500/39 rounded-full"
+                    className="absolute w-1 h-1 bg-red-500/70 rounded-full"
                     style={{
                       left: `${20 + i * 20}%`,
                       bottom: '-10px',
@@ -840,7 +957,7 @@ algunos archivos solo necesitan existir.`,
   const Proyectos = () => (
     <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="font-mono text-white/30 text-xs sm:text-sm mb-8 sm:mb-12 tracking-widest">PROYECTOS</h1>
+        <h1 className="font-mono text-white/40 text-sm sm:text-base mb-8 sm:mb-12 tracking-[0.3em] uppercase border-b border-white/10 pb-4">PROYECTOS</h1>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {projects.map(project => (
             <div
@@ -857,7 +974,7 @@ algunos archivos solo necesitan existir.`,
                 {[...Array(8)].map((_, i) => (
                   <div
                     key={i}
-                    className="absolute w-1 h-1 bg-white/39 rounded-full"
+                    className="absolute w-1 h-1 bg-white/80 rounded-full"
                     style={{
                       left: `${10 + i * 12}%`,
                       bottom: '-10px',
@@ -868,7 +985,7 @@ algunos archivos solo necesitan existir.`,
                 {[...Array(4)].map((_, i) => (
                   <div
                     key={`red-${i}`}
-                    className="absolute w-1 h-1 bg-red-500/39 rounded-full"
+                    className="absolute w-1 h-1 bg-red-500/70 rounded-full"
                     style={{
                       left: `${20 + i * 20}%`,
                       bottom: '-10px',
@@ -966,7 +1083,7 @@ algunos archivos solo necesitan existir.`,
     return (
       <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
         <div className="max-w-2xl mx-auto">
-          <h1 className="font-mono text-white/30 text-xs sm:text-sm mb-8 sm:mb-12 tracking-widest">CONTACTO</h1>
+          <h1 className="font-mono text-white/40 text-sm sm:text-base mb-8 sm:mb-12 tracking-[0.3em] uppercase border-b border-white/10 pb-4">CONTACTO</h1>
           
           {submitted ? (
             <div className="font-mono text-red-500 lowercase text-sm sm:text-base">mensaje enviado. gracias.</div>
@@ -1449,7 +1566,7 @@ algunos archivos solo necesitan existir.`,
 
           {/* Tabs */}
           <div className="flex gap-2 sm:gap-4 mb-6 sm:mb-8 border-b border-white/10 overflow-x-auto">
-            {['about', 'redes', 'publicaciones', 'proyectos', 'multimedia', 'secciones', 'estadísticas', 'configuración'].map(tab => (
+            {['about', 'redes', 'publicaciones', 'proyectos', 'multimedia', 'secciones', 'estadísticas', 'configuración', 'base de datos'].map(tab => (
               <button type="button"
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -2485,6 +2602,195 @@ algunos archivos solo necesitan existir.`,
               </div>
             </div>
           )}
+
+          {/* BASE DE DATOS TAB */}
+          {activeTab === 'base de datos' && (
+            <div className="space-y-6">
+              <div className="border border-white/10 p-6 space-y-6">
+                <h3 className="font-mono text-white text-lg mb-4 lowercase">☁️ supabase - almacenamiento en la nube</h3>
+                
+                <p className="font-mono text-white/70 text-sm leading-relaxed">
+                  conectá supabase para guardar tus publicaciones en la nube y acceder desde cualquier dispositivo.
+                </p>
+
+                {!supabaseConfig.enabled ? (
+                  <div className="space-y-6">
+                    {/* Setup Instructions */}
+                    <div className="bg-white/5 border border-white/10 p-6 space-y-4">
+                      <h4 className="font-mono text-white text-sm mb-3">📋 instrucciones de setup</h4>
+                      <ol className="font-mono text-white/70 text-xs space-y-3 list-decimal list-inside">
+                        <li>Andá a <a href="https://supabase.com" target="_blank" className="text-red-500 hover:underline">supabase.com</a> y creá cuenta gratis</li>
+                        <li>Click en "New Project"</li>
+                        <li>Elegí nombre y contraseña (guardala!)</li>
+                        <li>Esperá 2 minutos a que se cree el proyecto</li>
+                        <li>Andá a Settings → API</li>
+                        <li>Copiá "Project URL" y "anon public"</li>
+                        <li>Pegalos acá abajo</li>
+                        <li>En el SQL Editor de Supabase, pegá este código:</li>
+                      </ol>
+                      
+                      <div className="bg-black/50 p-4 border border-white/10 overflow-x-auto">
+                        <code className="font-mono text-green-500 text-xs whitespace-pre">
+{`CREATE TABLE publicaciones (
+  id BIGINT PRIMARY KEY,
+  title TEXT,
+  preview TEXT,
+  content TEXT,
+  "heroImage" TEXT,
+  images JSONB,
+  date TEXT,
+  draft BOOLEAN,
+  hidden BOOLEAN,
+  scheduled BOOLEAN,
+  "scheduledDate" TEXT,
+  tags JSONB,
+  slug TEXT,
+  "order" INT,
+  created_at TIMESTAMP DEFAULT NOW()
+);`}
+                        </code>
+                      </div>
+                      
+                      <button
+                        type="button"
+                        onClick={() => {
+                          navigator.clipboard.writeText(`CREATE TABLE publicaciones (
+  id BIGINT PRIMARY KEY,
+  title TEXT,
+  preview TEXT,
+  content TEXT,
+  "heroImage" TEXT,
+  images JSONB,
+  date TEXT,
+  draft BOOLEAN,
+  hidden BOOLEAN,
+  scheduled BOOLEAN,
+  "scheduledDate" TEXT,
+  tags JSONB,
+  slug TEXT,
+  "order" INT,
+  created_at TIMESTAMP DEFAULT NOW()
+);`);
+                          alert('SQL copiado al portapapeles ✓');
+                        }}
+                        className="w-full font-mono text-white/70 border border-white/10 px-4 py-2 hover:text-white hover:border-white/30 transition-all text-xs"
+                      >
+                        📋 copiar SQL
+                      </button>
+                    </div>
+
+                    {/* Configuration Form */}
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <label className="font-mono text-white/50 text-xs">project url</label>
+                        <input
+                          type="text"
+                          placeholder="https://tu-proyecto.supabase.co"
+                          value={supabaseConfig.url}
+                          onChange={(e) => setSupabaseConfig({...supabaseConfig, url: e.target.value})}
+                          className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <label className="font-mono text-white/50 text-xs">anon public key</label>
+                        <input
+                          type="password"
+                          placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                          value={supabaseConfig.anonKey}
+                          onChange={(e) => setSupabaseConfig({...supabaseConfig, anonKey: e.target.value})}
+                          className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
+                        />
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!supabaseConfig.url || !supabaseConfig.anonKey) {
+                            alert('Completá ambos campos');
+                            return;
+                          }
+                          const updated = {...supabaseConfig, enabled: true};
+                          setSupabaseConfig(updated);
+                          localStorage.setItem('dinamarca_supabase_config', JSON.stringify(updated));
+                          alert('Supabase conectado ✓ Ahora sincronizá tus publicaciones');
+                        }}
+                        className="w-full font-mono text-white bg-red-500 hover:bg-red-600 px-6 py-3 transition-all"
+                      >
+                        ✓ conectar supabase
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {/* Connected State */}
+                    <div className="bg-green-500/10 border border-green-500/30 p-4">
+                      <div className="font-mono text-green-500 text-sm mb-2">✓ supabase conectado</div>
+                      <div className="font-mono text-white/50 text-xs">
+                        {supabaseConfig.url}
+                      </div>
+                    </div>
+
+                    {/* Sync Status */}
+                    <div className={`border p-4 ${
+                      syncStatus === 'synced' ? 'border-green-500/30 bg-green-500/5' :
+                      syncStatus === 'syncing' ? 'border-yellow-500/30 bg-yellow-500/5' :
+                      syncStatus === 'error' ? 'border-red-500/30 bg-red-500/5' :
+                      'border-white/10'
+                    }`}>
+                      <div className="font-mono text-white/70 text-sm">
+                        Estado: {
+                          syncStatus === 'synced' ? '✓ sincronizado' :
+                          syncStatus === 'syncing' ? '⏳ sincronizando...' :
+                          syncStatus === 'error' ? '⚠️ error de conexión' :
+                          '⚪ sin sincronizar'
+                        }
+                      </div>
+                    </div>
+
+                    {/* Actions */}
+                    <div className="space-y-3">
+                      <button
+                        type="button"
+                        onClick={syncToSupabase}
+                        disabled={syncStatus === 'syncing'}
+                        className="w-full font-mono text-white border border-white/20 px-6 py-3 hover:bg-white/5 transition-all disabled:opacity-50"
+                      >
+                        ⬆️ subir publicaciones a la nube
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={loadFromSupabase}
+                        disabled={syncStatus === 'syncing'}
+                        className="w-full font-mono text-white border border-white/20 px-6 py-3 hover:bg-white/5 transition-all disabled:opacity-50"
+                      >
+                        ⬇️ descargar publicaciones de la nube
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (confirm('¿Desconectar Supabase? (tus datos en la nube quedan guardados)')) {
+                            const updated = {...supabaseConfig, enabled: false};
+                            setSupabaseConfig(updated);
+                            localStorage.setItem('dinamarca_supabase_config', JSON.stringify(updated));
+                          }
+                        }}
+                        className="w-full font-mono text-red-500 hover:underline text-sm"
+                      >
+                        desconectar supabase
+                      </button>
+                    </div>
+
+                    <p className="font-mono text-white/30 text-xs">
+                      💡 tip: las publicaciones se sincronizan automáticamente cada vez que creás o editás
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Custom Embed Modal */}
@@ -2666,7 +2972,7 @@ algunos archivos solo necesitan existir.`,
     return (
       <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="font-mono text-white/30 text-xs sm:text-sm mb-8 sm:mb-12 tracking-widest">CLIMA</h1>
+          <h1 className="font-mono text-white/40 text-sm sm:text-base mb-8 sm:mb-12 tracking-[0.3em] uppercase border-b border-white/10 pb-4">CLIMA</h1>
           {loading ? (
             <div className="font-mono text-white/30 text-sm text-center py-12">
               cargando temperaturas en vivo...
@@ -2750,7 +3056,40 @@ algunos archivos solo necesitan existir.`,
       document.head.appendChild(metaDesc);
     }
     metaDesc.content = siteConfig.metaDescription;
-  }, [siteConfig]);
+
+    // Session timeout: 30 minutos de inactividad
+    const checkSession = setInterval(() => {
+      if (isAdmin && Date.now() - lastActivity > 30 * 60 * 1000) {
+        setIsAdmin(false);
+        setCurrentSection('home');
+        alert('Sesión expirada por inactividad');
+      }
+    }, 60000); // Check cada minuto
+
+    // Update activity on any interaction
+    const updateActivity = () => setLastActivity(Date.now());
+    window.addEventListener('click', updateActivity);
+    window.addEventListener('keypress', updateActivity);
+    window.addEventListener('scroll', updateActivity);
+
+    return () => {
+      clearInterval(checkSession);
+      window.removeEventListener('click', updateActivity);
+      window.removeEventListener('keypress', updateActivity);
+      window.removeEventListener('scroll', updateActivity);
+    };
+  }, [siteConfig, isAdmin, lastActivity]);
+
+  // Auto-sync to Supabase when publicaciones change
+  useEffect(() => {
+    if (supabaseConfig.enabled && publicaciones.length > 0) {
+      const timeoutId = setTimeout(() => {
+        syncToSupabase();
+      }, 1000); // Debounce 1 segundo
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [publicaciones, supabaseConfig.enabled]);
 
   // Auto-publish scheduled posts
   useEffect(() => {
@@ -2846,22 +3185,48 @@ algunos archivos solo necesitan existir.`,
   // Restaurar scroll cuando se cierra lightbox
   useEffect(() => {
     if (!lightboxImage && window.lightboxScrollPosition !== undefined) {
-      setTimeout(() => {
-        window.scrollTo({ top: window.lightboxScrollPosition, behavior: 'instant' });
-      }, 10);
+      // Usar requestAnimationFrame para asegurar que el DOM está listo
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          window.scrollTo({ 
+            top: window.lightboxScrollPosition, 
+            behavior: 'instant' 
+          });
+        });
+      });
     }
   }, [lightboxImage]);
 
   const handleAdminLogin = async (e) => {
     e.preventDefault();
+    
+    if (loginBlocked) {
+      alert('Demasiados intentos fallidos. Esperá 5 minutos.');
+      return;
+    }
+    
     const inputHash = await hashPassword(adminPasswordInput);
     if (inputHash === adminPassword) {
       setIsAdmin(true);
       setCurrentSection('admin');
       setShowAdminLogin(false);
       setAdminPasswordInput('');
+      setLoginAttempts(0);
+      setLastActivity(Date.now());
     } else {
-      alert('contraseña incorrecta');
+      const newAttempts = loginAttempts + 1;
+      setLoginAttempts(newAttempts);
+      
+      if (newAttempts >= 5) {
+        setLoginBlocked(true);
+        setTimeout(() => {
+          setLoginBlocked(false);
+          setLoginAttempts(0);
+        }, 5 * 60 * 1000); // 5 minutos
+        alert('Cuenta bloqueada por 5 minutos por seguridad');
+      } else {
+        alert(`Contraseña incorrecta (${newAttempts}/5 intentos)`);
+      }
       setAdminPasswordInput('');
     }
   };
