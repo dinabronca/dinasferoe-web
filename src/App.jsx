@@ -576,20 +576,127 @@ algunos archivos solo necesitan existir.`,
 
   const AboutMe = () => (
     <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="font-mono text-white/40 text-sm sm:text-base mb-8 sm:mb-12 tracking-[0.3em] uppercase border-b border-white/10 pb-4">ABOUT_ME</h1>
-        <div className="font-mono text-white/90 text-lg sm:text-xl leading-[1.8] whitespace-pre-line lowercase tracking-wide">
-          {aboutText}
+      <div className="max-w-5xl mx-auto">
+
+        {/* Header minimalista */}
+        <div className="mb-16 sm:mb-24">
+          <div className="flex items-center gap-4 mb-3">
+            <div className="h-px flex-1 bg-gradient-to-r from-red-500/60 to-transparent" />
+            <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">about</span>
+            <div className="h-px flex-1 bg-gradient-to-l from-red-500/60 to-transparent" />
+          </div>
         </div>
+
+        {/* Layout asimétrico principal */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-16 sm:gap-24 items-start">
+
+          {/* Columna izquierda: decorativa */}
+          <div className="relative hidden lg:block">
+            {/* Línea vertical roja */}
+            <div className="absolute left-0 top-0 w-px h-full bg-gradient-to-b from-red-500 via-red-500/30 to-transparent" />
+
+            <div className="pl-6 space-y-12">
+              {/* Símbolo central */}
+              <div
+                className="font-mono text-[6rem] text-white/5 leading-none select-none"
+                style={{ textShadow: '0 0 60px rgba(239,68,68,0.15)' }}
+              >
+                ◈
+              </div>
+
+              {/* Tags / intereses */}
+              <div className="space-y-3">
+                {['estética', 'referencias visuales', 'coleccionar', 'obsesiones', 'archivos', 'silencio'].map((tag, i) => (
+                  <div
+                    key={tag}
+                    className="flex items-center gap-3"
+                    style={{ opacity: 1 - i * 0.1 }}
+                  >
+                    <div
+                      className="w-1 h-1 rounded-full flex-shrink-0"
+                      style={{ background: i < 2 ? '#ef4444' : 'rgba(255,255,255,0.3)' }}
+                    />
+                    <span className="font-mono text-white/40 text-xs lowercase tracking-wider">{tag}</span>
+                  </div>
+                ))}
+              </div>
+
+              {/* Número decorativo */}
+              <div className="font-mono text-white/10 text-5xl font-bold select-none">
+                001
+              </div>
+            </div>
+          </div>
+
+          {/* Columna derecha: texto principal */}
+          <div className="space-y-12">
+
+            {/* Bloque de texto con borde izquierdo rojo */}
+            <div className="border-l-2 border-red-500 pl-6 sm:pl-8">
+              <div
+                className="font-mono text-white/90 text-base sm:text-lg leading-[2] lowercase whitespace-pre-line tracking-wide"
+                style={{ textShadow: '0 0 40px rgba(255,255,255,0.05)' }}
+              >
+                {aboutText}
+              </div>
+            </div>
+
+            {/* Separador con símbolo */}
+            <div className="flex items-center gap-6">
+              <div className="h-px flex-1 bg-white/10" />
+              <span className="font-mono text-red-500/60 text-lg">◆</span>
+              <div className="h-px flex-1 bg-white/10" />
+            </div>
+
+            {/* Grid de "datos" estéticos */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-white/5">
+              {[
+                { label: 'formato', value: 'archivo' },
+                { label: 'estado', value: 'en proceso' },
+                { label: 'versión', value: '∞' },
+              ].map(item => (
+                <div
+                  key={item.label}
+                  className="bg-black p-4 sm:p-6 group hover:bg-white/5 transition-colors"
+                >
+                  <div className="font-mono text-white/20 text-xs tracking-[0.3em] uppercase mb-2">
+                    {item.label}
+                  </div>
+                  <div className="font-mono text-white/70 text-sm lowercase group-hover:text-red-500 transition-colors">
+                    {item.value}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Cita final con highlight */}
+            <div className="relative">
+              <div
+                className="absolute -left-4 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-red-500/40 to-transparent"
+              />
+              <p className="font-mono text-white/30 text-xs sm:text-sm leading-loose lowercase italic">
+                // esto no es un portfolio. es un archivo de mi cabeza.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        {/* Footer decorativo */}
+        <div className="mt-24 sm:mt-32 pt-8 border-t border-white/5 flex justify-between items-center">
+          <span className="font-mono text-white/15 text-xs tracking-widest">DINAMARCA</span>
+          <span className="font-mono text-white/15 text-xs tracking-widest">2025</span>
+        </div>
+
       </div>
     </div>
   );
 
   const Publicaciones = () => (
     <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-7xl mx-auto">
         <h1 className="font-mono text-white/40 text-sm sm:text-base mb-8 sm:mb-12 tracking-[0.3em] uppercase border-b border-white/10 pb-4">PUBLICACIONES</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
           {publicaciones.filter(pub => !pub.hidden && !pub.draft).map(pub => (
             <article 
               key={pub.id} 
@@ -3206,7 +3313,7 @@ algunos archivos solo necesitan existir.`,
     }
     
     const inputHash = await hashPassword(adminPasswordInput);
-    if (inputHash === adminPassword) {
+    if (inputHash === storedPasswordHash) {
       setIsAdmin(true);
       setCurrentSection('admin');
       setShowAdminLogin(false);
@@ -3284,13 +3391,13 @@ algunos archivos solo necesitan existir.`,
                   </button>
                 </div>
                 <div className="flex gap-4">
-                  <button type="button"
+                  <button
                     type="submit"
                     className="flex-1 font-mono text-white border border-white/20 px-6 py-3 hover:bg-red-500 hover:border-red-500 transition-all"
                   >
                     entrar
                   </button>
-                  <button type="button"
+                  <button
                     type="button"
                     onClick={() => {
                       setShowAdminLogin(false);
