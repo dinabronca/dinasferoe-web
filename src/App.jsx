@@ -433,6 +433,69 @@ algunos archivos solo necesitan existir.`,
     );
   };
 
+  // Banderas de Dinamarca cayendo suavemente
+  const DanmarkFlags = () => {
+    const [flags, setFlags] = useState([]);
+
+    useEffect(() => {
+      const spawn = () => {
+        const id = Date.now() + Math.random();
+        setFlags(prev => [...prev, {
+          id,
+          x: 5 + Math.random() * 90,
+          duration: 12 + Math.random() * 16,
+          delay: 0,
+          size: 14 + Math.random() * 12,
+          sway: (Math.random() - 0.5) * 60,
+          opacity: 0.06 + Math.random() * 0.10,
+        }]);
+        setTimeout(() => {
+          setFlags(prev => prev.filter(f => f.id !== id));
+        }, 30000);
+      };
+
+      // Aparecen cada 4–9 segundos
+      const schedule = () => {
+        spawn();
+        setTimeout(schedule, 4000 + Math.random() * 5000);
+      };
+      const t = setTimeout(schedule, 1500);
+      return () => clearTimeout(t);
+    }, []);
+
+    return (
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-10">
+        <style>{`
+          @keyframes flagFall {
+            0%   { transform: translateY(-60px) translateX(0px) rotate(-4deg); opacity: 0; }
+            8%   { opacity: 1; }
+            90%  { opacity: 1; }
+            100% { transform: translateY(110vh) translateX(var(--sway)) rotate(4deg); opacity: 0; }
+          }
+        `}</style>
+        {flags.map(f => (
+          <div
+            key={f.id}
+            style={{
+              position: 'absolute',
+              left: `${f.x}%`,
+              top: 0,
+              fontSize: `${f.size}px`,
+              opacity: f.opacity,
+              '--sway': `${f.sway}px`,
+              animation: `flagFall ${f.duration}s ease-in forwards`,
+              animationDelay: `${f.delay}s`,
+              filter: 'grayscale(20%)',
+              userSelect: 'none',
+            }}
+          >
+            🇩🇰
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   const Header = () => {
     const sections = ['about me', 'publicaciones', 'multimedia', 'proyectos', 'clima', 'contacto']
       .filter(s => visibleSections[s]);
@@ -543,34 +606,17 @@ algunos archivos solo necesitan existir.`,
       <div className="h-px bg-white/6" />
       <div className="container mx-auto px-6 sm:px-10 py-3 sm:py-4 flex items-center justify-between gap-4">
 
-        {/* Año + nombre izquierda */}
-        <span className="font-mono text-white/20 text-xs tracking-[0.2em] hidden sm:block">
+        {/* Copyright izquierda */}
+        <span className="font-mono text-white/20 text-xs tracking-[0.2em]">
           © 2025 — {siteConfig.siteName}
         </span>
 
-        {/* Redes centradas */}
-        <div className="flex items-center gap-4 sm:gap-6 mx-auto sm:mx-0">
-          {Object.entries(socialLinks)
-            .filter(([platform]) => !hiddenSocials[platform])
-            .map(([platform, url]) => (
-            <a
-              key={platform}
-              href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-mono text-white/25 text-xs tracking-widest uppercase hover:text-red-500 transition-colors duration-300"
-            >
-              {platform}
-            </a>
-          ))}
-        </div>
-
-        {/* Admin pill derecha */}
+        {/* Admin derecha */}
         {isAdmin && (
           <button
             type="button"
             onClick={() => setCurrentSection('admin')}
-            className="font-mono text-white/20 text-xs tracking-widest uppercase hover:text-red-500 transition-colors hidden sm:block"
+            className="font-mono text-white/20 text-xs tracking-widest uppercase hover:text-red-500 transition-colors"
           >
             admin
           </button>
@@ -589,13 +635,30 @@ algunos archivos solo necesitan existir.`,
     <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
       <div className="max-w-5xl mx-auto">
 
-        {/* Header minimalista */}
+        {/* Header con líneas */}
         <div className="mb-16 sm:mb-24">
-          <div className="flex items-center gap-4 mb-3">
+          <div className="flex items-center gap-4">
             <div className="h-px flex-1 bg-gradient-to-r from-red-500/60 to-transparent" />
             <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">about</span>
             <div className="h-px flex-1 bg-gradient-to-l from-red-500/60 to-transparent" />
           </div>
+        </div>
+
+        {/* Ticker corriendo — línea de texto horizontal */}
+        <div className="overflow-hidden mb-16 border-t border-b border-white/5 py-3">
+          <div style={{ display: 'flex', animation: 'tickerScroll 28s linear infinite', whiteSpace: 'nowrap' }}>
+            {[...Array(4)].map((_, i) => (
+              <span key={i} className="font-mono text-white/10 text-xs tracking-[0.3em] uppercase mr-12 flex-shrink-0">
+                ARCHIVO DIGITAL PERSONAL &nbsp;◈&nbsp; DINAMARCA &nbsp;◆&nbsp; EN PROCESO &nbsp;◈&nbsp; 2025 &nbsp;◆&nbsp;&nbsp;
+              </span>
+            ))}
+          </div>
+          <style>{`
+            @keyframes tickerScroll {
+              0%   { transform: translateX(0); }
+              100% { transform: translateX(-50%); }
+            }
+          `}</style>
         </div>
 
         {/* Layout asimétrico principal */}
@@ -603,90 +666,77 @@ algunos archivos solo necesitan existir.`,
 
           {/* Columna izquierda: decorativa */}
           <div className="relative hidden lg:block">
-            {/* Línea vertical roja */}
             <div className="absolute left-0 top-0 w-px h-full bg-gradient-to-b from-red-500 via-red-500/30 to-transparent" />
+            <div className="pl-6 space-y-10">
 
-            <div className="pl-6 space-y-12">
-              {/* Símbolo central */}
-              <div
-                className="font-mono text-[6rem] text-white/5 leading-none select-none"
-                style={{ textShadow: '0 0 60px rgba(239,68,68,0.15)' }}
-              >
-                ◈
-              </div>
+              <div className="font-mono text-[6rem] text-white/4 leading-none select-none"
+                style={{ textShadow: '0 0 80px rgba(239,68,68,0.12)' }}>◈</div>
 
-              {/* Tags / intereses */}
               <div className="space-y-3">
                 {['estética', 'referencias visuales', 'coleccionar', 'obsesiones', 'archivos', 'silencio'].map((tag, i) => (
-                  <div
-                    key={tag}
-                    className="flex items-center gap-3"
-                    style={{ opacity: 1 - i * 0.1 }}
-                  >
-                    <div
-                      className="w-1 h-1 rounded-full flex-shrink-0"
-                      style={{ background: i < 2 ? '#ef4444' : 'rgba(255,255,255,0.3)' }}
-                    />
-                    <span className="font-mono text-white/40 text-xs lowercase tracking-wider">{tag}</span>
+                  <div key={tag} className="flex items-center gap-3" style={{ opacity: 1 - i * 0.1 }}>
+                    <div className="w-1 h-1 rounded-full flex-shrink-0"
+                      style={{ background: i < 2 ? '#ef4444' : 'rgba(255,255,255,0.25)' }} />
+                    <span className="font-mono text-white/35 text-xs lowercase tracking-wider">{tag}</span>
                   </div>
                 ))}
               </div>
 
-              {/* Número decorativo */}
-              <div className="font-mono text-white/10 text-5xl font-bold select-none">
-                001
+              {/* Número grande */}
+              <div className="font-mono text-white/8 text-6xl font-bold select-none leading-none">001</div>
+
+              {/* Línea de dots vertical */}
+              <div className="flex flex-col gap-2 items-start pl-1">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="rounded-full"
+                    style={{ width: i === 0 ? '6px' : '3px', height: i === 0 ? '6px' : '3px',
+                      background: i === 0 ? '#ef4444' : 'rgba(255,255,255,0.15)' }} />
+                ))}
               </div>
             </div>
           </div>
 
-          {/* Columna derecha: texto principal */}
+          {/* Columna derecha */}
           <div className="space-y-12">
 
-            {/* Bloque de texto con borde izquierdo rojo */}
+            {/* Texto principal */}
             <div className="border-l-2 border-red-500 pl-6 sm:pl-8">
-              <div
-                className="font-mono text-white/90 text-base sm:text-lg leading-[2] lowercase whitespace-pre-line tracking-wide"
-                style={{ textShadow: '0 0 40px rgba(255,255,255,0.05)' }}
-              >
+              <div className="font-mono text-white/85 text-base sm:text-lg leading-[2.1] lowercase whitespace-pre-line tracking-wide">
                 {aboutText}
               </div>
             </div>
 
-            {/* Separador con símbolo */}
+            {/* Separador */}
             <div className="flex items-center gap-6">
-              <div className="h-px flex-1 bg-white/10" />
-              <span className="font-mono text-red-500/60 text-lg">◆</span>
-              <div className="h-px flex-1 bg-white/10" />
+              <div className="h-px flex-1 bg-white/8" />
+              <span className="font-mono text-red-500/50 text-base">◆</span>
+              <div className="h-px flex-1 bg-white/8" />
             </div>
 
-            {/* Grid de "datos" estéticos */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-px bg-white/5">
+            {/* Grid de datos — 5 celdas */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-px" style={{ background: 'rgba(255,255,255,0.04)' }}>
               {[
                 { label: 'formato', value: 'archivo' },
                 { label: 'estado', value: 'en proceso' },
                 { label: 'versión', value: '∞' },
+                { label: 'origen', value: 'argentina' },
+                { label: 'tipo', value: 'personal' },
+                { label: 'acceso', value: 'abierto' },
               ].map(item => (
-                <div
-                  key={item.label}
-                  className="bg-black p-4 sm:p-6 group hover:bg-white/5 transition-colors"
-                >
-                  <div className="font-mono text-white/20 text-xs tracking-[0.3em] uppercase mb-2">
-                    {item.label}
-                  </div>
-                  <div className="font-mono text-white/70 text-sm lowercase group-hover:text-red-500 transition-colors">
+                <div key={item.label} className="bg-black p-4 sm:p-5 group hover:bg-white/[0.03] transition-colors">
+                  <div className="font-mono text-white/18 text-[10px] tracking-[0.35em] uppercase mb-2">{item.label}</div>
+                  <div className="font-mono text-white/60 text-xs sm:text-sm lowercase group-hover:text-red-500 transition-colors duration-300">
                     {item.value}
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Cita final con highlight */}
-            <div className="relative">
-              <div
-                className="absolute -left-4 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-red-500/40 to-transparent"
-              />
-              <p className="font-mono text-white/30 text-xs sm:text-sm leading-loose lowercase italic">
-                // esto no es un portfolio. es un archivo de mi cabeza.
+            {/* Bloque cita */}
+            <div className="relative pl-6">
+              <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-red-500/35 to-transparent" />
+              <p className="font-mono text-white/25 text-xs sm:text-sm leading-loose lowercase italic">
+                // esto no es un portfolio.<br />es un archivo de mi cabeza.
               </p>
             </div>
 
@@ -695,57 +745,63 @@ algunos archivos solo necesitan existir.`,
 
         {/* Footer decorativo */}
         <div className="mt-24 sm:mt-32 pt-8 border-t border-white/5 flex justify-between items-center">
-          <span className="font-mono text-white/15 text-xs tracking-widest">DINAMARCA</span>
-          <span className="font-mono text-white/15 text-xs tracking-widest">2025</span>
+          <span className="font-mono text-white/12 text-xs tracking-widest">DINAMARCA</span>
+          <span className="font-mono text-white/12 text-xs tracking-widest">2025</span>
         </div>
 
       </div>
     </div>
   );
 
-  const Publicaciones = () => (
+  const Publicaciones = () => {
+    const visibles = publicaciones.filter(pub => !pub.hidden && !pub.draft);
+    return (
     <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
 
-        {/* Header con líneas laterales */}
-        <div className="flex items-center gap-4 mb-16 sm:mb-20">
+        {/* Header con conteo */}
+        <div className="flex items-center gap-4 mb-4">
           <div className="h-px flex-1 bg-gradient-to-r from-red-500/50 to-transparent" />
           <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">publicaciones</span>
           <div className="h-px flex-1 bg-gradient-to-l from-red-500/50 to-transparent" />
         </div>
+        <div className="flex justify-end mb-16 sm:mb-20">
+          <span className="font-mono text-white/15 text-xs tracking-widest">{String(visibles.length).padStart(2,'0')} entradas</span>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {publicaciones.filter(pub => !pub.hidden && !pub.draft).map((pub, i) => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px" style={{ background: 'rgba(255,255,255,0.04)' }}>
+          {visibles.map((pub, i) => (
             <article
               key={pub.id}
               onClick={() => setSelectedPublication(pub)}
-              className="group cursor-pointer border border-white/8 hover:border-red-500 transition-colors duration-300 bg-white/[0.02] hover:bg-white/[0.04] flex flex-col"
+              className="group cursor-pointer bg-black hover:bg-white/[0.025] transition-colors duration-300 flex flex-col border border-transparent hover:border-red-500 relative"
             >
               {/* Imagen */}
-              <div className="relative overflow-hidden aspect-[16/9]">
+              <div className="relative overflow-hidden" style={{ height: '200px' }}>
                 <img
                   src={pub.heroImage}
                   alt={pub.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
-                {/* Número de entrada */}
-                <div className="absolute top-4 right-4 font-mono text-white/20 text-xs">
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
+                <div className="absolute top-3 right-3 font-mono text-white/20 text-xs tabular-nums">
                   {String(i + 1).padStart(2, '0')}
                 </div>
               </div>
 
               {/* Contenido */}
-              <div className="p-5 sm:p-6 flex flex-col flex-1">
-                <div className="font-mono text-white/25 text-xs tracking-widest mb-3">{pub.date}</div>
-                <h2 className="font-mono text-white text-sm sm:text-base leading-snug lowercase mb-4 flex-1">
+              <div className="p-5 flex flex-col flex-1">
+                <div className="font-mono text-white/20 text-[10px] tracking-widest uppercase mb-3">{pub.date}</div>
+                <h2 className="font-mono text-white/90 text-sm leading-snug lowercase mb-4 flex-1 group-hover:text-white transition-colors">
                   {pub.title}
                 </h2>
-                <p className="font-mono text-white/45 text-xs leading-relaxed lowercase mb-5 line-clamp-2">
+                <p className="font-mono text-white/35 text-xs leading-relaxed lowercase mb-5 line-clamp-2">
                   {pub.preview}
                 </p>
-                <div className="flex items-center gap-2 font-mono text-xs text-red-500/70 group-hover:text-red-500 transition-colors">
-                  <span className="h-px w-4 bg-red-500/50 group-hover:w-8 transition-all duration-300" />
+                <div className="flex items-center gap-2 font-mono text-xs text-white/25 group-hover:text-red-500 transition-colors duration-300">
+                  <span className="h-px bg-current transition-all duration-300" style={{ width: '16px' }}
+                    onMouseEnter={e => e.currentTarget.style.width='32px'}
+                    onMouseLeave={e => e.currentTarget.style.width='16px'} />
                   leer
                 </div>
               </div>
@@ -753,11 +809,17 @@ algunos archivos solo necesitan existir.`,
           ))}
         </div>
 
-        {publicaciones.filter(p => !p.hidden && !p.draft).length === 0 && (
-          <div className="text-center font-mono text-white/20 text-xs py-24 tracking-widest">
+        {visibles.length === 0 && (
+          <div className="text-center font-mono text-white/15 text-xs py-24 tracking-widest">
             — sin publicaciones aún —
           </div>
         )}
+
+        {/* Footer decorativo */}
+        <div className="mt-16 pt-8 border-t border-white/5 flex justify-between items-center">
+          <span className="font-mono text-white/12 text-xs tracking-widest">DINAMARCA</span>
+          <span className="font-mono text-white/12 text-xs tracking-widest">2025</span>
+        </div>
       </div>
 
       {/* Modal de lectura — editorial */}
@@ -855,6 +917,7 @@ algunos archivos solo necesitan existir.`,
       )}
     </div>
   );
+  };
 
   const Multimedia = () => {
     // Extraer todas las imágenes de todas las publicaciones
@@ -930,37 +993,55 @@ algunos archivos solo necesitan existir.`,
       <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto">
 
-          <div className="flex items-center gap-4 mb-16 sm:mb-20">
+          <div className="flex items-center gap-4 mb-4">
             <div className="h-px flex-1 bg-gradient-to-r from-red-500/50 to-transparent" />
             <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">multimedia</span>
             <div className="h-px flex-1 bg-gradient-to-l from-red-500/50 to-transparent" />
           </div>
+          <div className="flex justify-end mb-12">
+            <span className="font-mono text-white/15 text-xs tracking-widest">{String(allImages.length).padStart(2,'0')} imágenes</span>
+          </div>
 
           {allImages.length === 0 ? (
-            <div className="text-center font-mono text-white/20 text-xs py-24 tracking-widest">
+            <div className="text-center font-mono text-white/15 text-xs py-24 tracking-widest">
               — sin imágenes aún —
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-px bg-white/5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-px" style={{ background: 'rgba(255,255,255,0.04)' }}>
               {allImages.map((item, i) => (
                 <div
                   key={item.id}
                   onClick={() => setSelectedMedia(item)}
-                  className="aspect-square bg-black overflow-hidden cursor-pointer group relative"
+                  className="bg-black overflow-hidden cursor-pointer group relative"
+                  style={{ height: '220px' }}
                 >
                   <img
                     src={item.url}
                     alt={item.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-70 group-hover:opacity-100"
+                    className="w-full h-full object-cover opacity-55 group-hover:opacity-90 transition-all duration-500 group-hover:scale-105"
+                    loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-start justify-end p-4">
-                    <div className="font-mono text-white text-xs lowercase line-clamp-1">{item.title}</div>
-                    <div className="font-mono text-white/40 text-xs mt-1">{String(i + 1).padStart(2, '0')}</div>
+                  {/* Overlay en hover */}
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  {/* Borde rojo */}
+                  <div className="absolute inset-0 border border-transparent group-hover:border-red-500/50 transition-colors duration-300" />
+                  {/* Número */}
+                  <div className="absolute top-3 left-3 font-mono text-white/20 text-[10px] tabular-nums group-hover:text-white/50 transition-colors">
+                    {String(i + 1).padStart(2, '0')}
+                  </div>
+                  {/* Info en hover */}
+                  <div className="absolute bottom-0 left-0 right-0 p-4 translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                    <div className="font-mono text-white text-xs lowercase truncate leading-tight">{item.title}</div>
                   </div>
                 </div>
               ))}
             </div>
           )}
+
+          <div className="mt-16 pt-8 border-t border-white/5 flex justify-between items-center">
+            <span className="font-mono text-white/12 text-xs tracking-widest">DINAMARCA</span>
+            <span className="font-mono text-white/12 text-xs tracking-widest">2025</span>
+          </div>
         </div>
 
         {selectedMedia && (
@@ -986,7 +1067,7 @@ algunos archivos solo necesitan existir.`,
                   }}
                   className="font-mono text-red-500/70 text-xs hover:text-red-500 transition-colors flex items-center gap-2"
                 >
-                  ver publicación <span className="h-px w-4 bg-red-500/70" />
+                  ver publicación <span className="h-px w-4 bg-red-500/70 inline-block" />
                 </button>
               </div>
             </div>
@@ -1000,55 +1081,54 @@ algunos archivos solo necesitan existir.`,
     <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
 
-        <div className="flex items-center gap-4 mb-16 sm:mb-20">
+        <div className="flex items-center gap-4 mb-4">
           <div className="h-px flex-1 bg-gradient-to-r from-red-500/50 to-transparent" />
           <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">proyectos</span>
           <div className="h-px flex-1 bg-gradient-to-l from-red-500/50 to-transparent" />
         </div>
+        <div className="flex justify-end mb-16 sm:mb-20">
+          <span className="font-mono text-white/15 text-xs tracking-widest">{String(projects.length).padStart(2,'0')} proyectos</span>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px" style={{ background: 'rgba(255,255,255,0.04)' }}>
           {projects.map((project, i) => (
             <div
               key={project.id}
               onClick={() => {
-                if (project.link && project.link !== '#') {
-                  window.open(project.link, '_blank');
-                }
+                if (project.link && project.link !== '#') window.open(project.link, '_blank');
               }}
-              className="aspect-[4/3] bg-white/[0.02] border border-white/8 hover:border-red-500 transition-colors duration-300 cursor-pointer flex flex-col items-center justify-center p-6 sm:p-8 group relative overflow-hidden"
+              className="bg-black hover:bg-white/[0.02] border border-transparent hover:border-red-500 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center p-8 sm:p-12 group relative overflow-hidden"
+              style={{ minHeight: '260px' }}
             >
-              {/* Número decorativo fondo */}
-              <div className="absolute top-4 right-4 font-mono text-white/8 text-xs">
-                {String(i + 1).padStart(2, '0')}
-              </div>
+              {/* Número fondo */}
+              <div className="absolute top-4 right-4 font-mono text-white/6 text-xs tabular-nums">{String(i + 1).padStart(2,'0')}</div>
+
+              {/* Línea superior decorativa en hover */}
+              <div className="absolute top-0 left-0 right-0 h-px bg-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
               {project.logoImage ? (
-                <img
-                  src={project.logoImage}
-                  alt={project.name}
-                  className="w-20 h-20 object-contain mb-5 opacity-60 group-hover:opacity-100 transition-opacity"
-                />
+                <img src={project.logoImage} alt={project.name}
+                  className="w-16 h-16 object-contain mb-6 opacity-45 group-hover:opacity-90 transition-opacity duration-300" />
               ) : (
-                <div className="text-4xl sm:text-5xl mb-5 opacity-40 group-hover:opacity-80 transition-opacity">
+                <div className="text-4xl mb-6 opacity-35 group-hover:opacity-70 transition-opacity duration-300">
                   {project.logo || '▪'}
                 </div>
               )}
 
-              <h3 className="font-mono text-white text-sm sm:text-base mb-1 lowercase text-center">
+              <h3 className="font-mono text-white/80 text-sm mb-1 lowercase text-center group-hover:text-white transition-colors">
                 {project.name}
               </h3>
-              <p className="font-mono text-red-500/50 text-xs lowercase mb-3 text-center tracking-widest">
+              <p className="font-mono text-red-500/40 text-[10px] lowercase mb-4 text-center tracking-[0.3em] uppercase group-hover:text-red-500/70 transition-colors">
                 {project.type}
               </p>
-              <p className="font-mono text-white/35 text-xs lowercase text-center leading-relaxed line-clamp-2">
+              <p className="font-mono text-white/25 text-xs lowercase text-center leading-relaxed line-clamp-2 max-w-[200px] group-hover:text-white/40 transition-colors">
                 {project.description}
               </p>
 
               {project.link && project.link !== '#' && (
-                <div className="absolute bottom-4 left-0 right-0 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="font-mono text-white/40 text-xs flex items-center gap-2">
-                    <span className="h-px w-4 bg-red-500/60" /> abrir
-                  </span>
+                <div className="mt-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <span className="h-px w-4 bg-red-500/60" />
+                  <span className="font-mono text-white/30 text-[10px] tracking-widest uppercase">abrir</span>
                 </div>
               )}
             </div>
@@ -1056,10 +1136,15 @@ algunos archivos solo necesitan existir.`,
         </div>
 
         {projects.length === 0 && (
-          <div className="text-center font-mono text-white/20 text-xs py-24 tracking-widest">
+          <div className="text-center font-mono text-white/15 text-xs py-24 tracking-widest">
             — sin proyectos aún —
           </div>
         )}
+
+        <div className="mt-16 pt-8 border-t border-white/5 flex justify-between items-center">
+          <span className="font-mono text-white/12 text-xs tracking-widest">DINAMARCA</span>
+          <span className="font-mono text-white/12 text-xs tracking-widest">2025</span>
+        </div>
       </div>
     </div>
   );
@@ -1078,75 +1163,93 @@ algunos archivos solo necesitan existir.`,
       <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
         <div className="max-w-5xl mx-auto">
 
+          {/* Header */}
           <div className="flex items-center gap-4 mb-16 sm:mb-20">
             <div className="h-px flex-1 bg-gradient-to-r from-red-500/50 to-transparent" />
             <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">contacto</span>
             <div className="h-px flex-1 bg-gradient-to-l from-red-500/50 to-transparent" />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-16 sm:gap-24">
+          <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-16 sm:gap-20 items-start">
 
             {/* Columna izquierda: redes */}
-            <div className="space-y-1">
-              <div className="font-mono text-white/20 text-xs tracking-widest uppercase mb-6">redes</div>
-              {Object.entries(socialLinks)
-                .filter(([p]) => !hiddenSocials[p])
-                .map(([platform, url]) => (
-                <a
-                  key={platform}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-3 py-3 border-b border-white/5 group"
-                >
-                  <span className="h-px w-3 bg-white/20 group-hover:w-6 group-hover:bg-red-500 transition-all duration-300" />
-                  <span className="font-mono text-white/40 text-xs lowercase tracking-wider group-hover:text-white/80 transition-colors">
-                    {platform}
-                  </span>
-                </a>
-              ))}
+            <div>
+              <div className="font-mono text-white/18 text-[10px] tracking-[0.4em] uppercase mb-8">redes</div>
+              <div className="space-y-0">
+                {Object.entries(socialLinks)
+                  .filter(([p]) => !hiddenSocials[p])
+                  .map(([platform, url], i) => (
+                  <a key={platform} href={url} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center gap-4 py-4 border-b border-white/5 group transition-all"
+                  >
+                    <span
+                      className="flex-shrink-0 h-px transition-all duration-300 group-hover:bg-red-500"
+                      style={{ width: '12px', background: 'rgba(255,255,255,0.15)' }}
+                    />
+                    <span className="font-mono text-white/35 text-xs lowercase tracking-wider group-hover:text-white/70 transition-colors">
+                      {platform}
+                    </span>
+                  </a>
+                ))}
+              </div>
+
+              {/* Símbolo decorativo */}
+              <div className="mt-12 font-mono text-white/5 text-6xl select-none">◈</div>
             </div>
 
             {/* Columna derecha: formulario */}
             <div>
               {submitted ? (
-                <div className="flex items-center gap-4 py-8">
-                  <span className="h-px w-8 bg-red-500" />
-                  <span className="font-mono text-white/60 text-sm lowercase">mensaje enviado.</span>
+                <div className="flex items-center gap-5 py-12">
+                  <span className="h-px w-10 bg-red-500" />
+                  <span className="font-mono text-white/50 text-sm lowercase tracking-wider">mensaje enviado.</span>
                 </div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  {[
-                    { key: 'name', placeholder: 'nombre', type: 'text' },
-                    { key: 'email', placeholder: 'email', type: 'email' },
-                  ].map(field => (
-                    <div key={field.key} className="relative">
-                      <div className="absolute left-0 top-0 bottom-0 w-px bg-white/10 group-focus-within:bg-red-500" />
-                      <input
-                        type={field.type}
-                        placeholder={field.placeholder}
-                        value={formData[field.key]}
-                        onChange={e => setFormData({ ...formData, [field.key]: e.target.value })}
-                        className="w-full bg-transparent border-0 border-b border-white/10 focus:border-red-500 px-0 py-3 font-mono text-white text-sm lowercase focus:outline-none transition-colors placeholder:text-white/20"
-                        required
-                      />
-                    </div>
-                  ))}
-                  <div className="relative">
-                    <textarea
-                      placeholder="mensaje"
-                      value={formData.message}
-                      onChange={e => setFormData({ ...formData, message: e.target.value })}
-                      rows="5"
-                      className="w-full bg-white/[0.02] border border-white/8 focus:border-red-500 px-4 py-3 font-mono text-white text-sm lowercase focus:outline-none resize-none transition-colors placeholder:text-white/20"
+                <form onSubmit={handleSubmit} className="space-y-8">
+                  {/* Nombre */}
+                  <div className="relative group">
+                    <label className="font-mono text-white/18 text-[10px] tracking-[0.35em] uppercase block mb-3">nombre</label>
+                    <input
+                      type="text"
+                      placeholder="tu nombre"
+                      value={formData.name}
+                      onChange={e => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full bg-transparent border-b border-white/10 focus:border-red-500 py-3 font-mono text-white/80 text-sm lowercase focus:outline-none transition-colors placeholder:text-white/15"
                       required
                     />
                   </div>
-                  <button
-                    type="submit"
-                    className="font-mono text-white/60 text-xs tracking-widest uppercase hover:text-white transition-colors flex items-center gap-4"
+
+                  {/* Email */}
+                  <div className="relative group">
+                    <label className="font-mono text-white/18 text-[10px] tracking-[0.35em] uppercase block mb-3">email</label>
+                    <input
+                      type="email"
+                      placeholder="tu@email.com"
+                      value={formData.email}
+                      onChange={e => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full bg-transparent border-b border-white/10 focus:border-red-500 py-3 font-mono text-white/80 text-sm lowercase focus:outline-none transition-colors placeholder:text-white/15"
+                      required
+                    />
+                  </div>
+
+                  {/* Mensaje */}
+                  <div className="relative group">
+                    <label className="font-mono text-white/18 text-[10px] tracking-[0.35em] uppercase block mb-3">mensaje</label>
+                    <textarea
+                      placeholder="escribí lo que quieras"
+                      value={formData.message}
+                      onChange={e => setFormData({ ...formData, message: e.target.value })}
+                      rows="6"
+                      className="w-full bg-white/[0.02] border border-white/8 focus:border-red-500 px-4 py-4 font-mono text-white/80 text-sm lowercase focus:outline-none resize-none transition-colors placeholder:text-white/15"
+                      required
+                    />
+                  </div>
+
+                  {/* Submit */}
+                  <button type="submit"
+                    className="flex items-center gap-4 font-mono text-white/40 text-xs tracking-[0.35em] uppercase hover:text-white transition-colors group"
                   >
-                    <span className="h-px w-8 bg-red-500/60" />
+                    <span className="h-px w-6 bg-red-500/60 group-hover:w-10 transition-all duration-300" />
                     enviar
                   </button>
                 </form>
@@ -1156,8 +1259,8 @@ algunos archivos solo necesitan existir.`,
 
           {/* Footer decorativo */}
           <div className="mt-24 sm:mt-32 pt-8 border-t border-white/5 flex justify-between items-center">
-            <span className="font-mono text-white/15 text-xs tracking-widest">DINAMARCA</span>
-            <span className="font-mono text-white/15 text-xs tracking-widest">2025</span>
+            <span className="font-mono text-white/12 text-xs tracking-widest">DINAMARCA</span>
+            <span className="font-mono text-white/12 text-xs tracking-widest">2025</span>
           </div>
         </div>
       </div>
@@ -3011,49 +3114,66 @@ algunos archivos solo necesitan existir.`,
             <div className="h-px flex-1 bg-gradient-to-l from-red-500/50 to-transparent" />
           </div>
 
+          {/* Subtítulo editorial */}
+          <div className="mb-12 flex items-start gap-6">
+            <div className="hidden lg:block">
+              <div className="font-mono text-white/8 text-7xl leading-none select-none">°</div>
+            </div>
+            <div>
+              <p className="font-mono text-white/20 text-xs lowercase tracking-widest leading-loose">
+                // temperaturas en tiempo real — argentina
+              </p>
+            </div>
+          </div>
+
           {loading ? (
             <div className="text-center font-mono text-white/20 text-xs py-24 tracking-widest">
               — cargando —
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-px bg-white/5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-px" style={{ background: 'rgba(255,255,255,0.04)' }}>
               {ciudadesConFotos.map((ciudad, idx) => {
                 const weather = weatherData[ciudad.nombre] || { temp: '--', description: 'sin datos' };
                 return (
                   <div
                     key={idx}
-                    className="relative bg-black overflow-hidden group aspect-[3/4]"
+                    className="relative bg-black overflow-hidden group"
+                    style={{ height: '200px' }}
                   >
                     {/* Imagen de fondo */}
-                    <div
-                      className="absolute inset-0 opacity-25 group-hover:opacity-50 transition-opacity duration-500"
-                      style={{
-                        backgroundImage: `url(${ciudad.imagen})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center'
-                      }}
+                    <img
+                      src={ciudad.imagen}
+                      alt={ciudad.nombre}
+                      className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-45 transition-opacity duration-500 pointer-events-none"
+                      loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/30" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none" />
 
                     {/* Borde rojo en hover */}
-                    <div className="absolute inset-0 border border-transparent group-hover:border-red-500/60 transition-colors duration-300" />
+                    <div className="absolute inset-0 border border-transparent group-hover:border-red-500/50 transition-colors duration-300 pointer-events-none" />
 
                     {/* Contenido */}
-                    <div className="absolute inset-0 flex flex-col justify-end p-4">
+                    <div className="absolute bottom-0 left-0 right-0 p-4">
                       <div
-                        className="font-mono text-3xl sm:text-4xl mb-2 leading-none"
+                        className="font-mono text-3xl leading-none mb-2"
                         style={{ color: getColorForTemp(weather.temp) }}
                       >
                         {weather.temp}°
                       </div>
-                      <div className="font-mono text-white text-xs lowercase leading-tight">{ciudad.nombre}</div>
-                      <div className="font-mono text-white/30 text-xs lowercase mt-1 leading-tight">{weather.description}</div>
+                      <div className="font-mono text-white/80 text-xs lowercase leading-tight truncate">{ciudad.nombre}</div>
+                      <div className="font-mono text-white/25 text-xs lowercase mt-0.5 leading-tight truncate">{weather.description}</div>
                     </div>
                   </div>
                 );
               })}
             </div>
           )}
+
+          {/* Footer decorativo */}
+          <div className="mt-16 pt-8 border-t border-white/5 flex justify-between items-center">
+            <span className="font-mono text-white/15 text-xs tracking-widest">DINAMARCA</span>
+            <span className="font-mono text-white/15 text-xs tracking-widest">2025</span>
+          </div>
         </div>
       </div>
     );
@@ -3294,6 +3414,7 @@ algunos archivos solo necesitan existir.`,
       ) : (
         <>
           <BackgroundParticles />
+          <DanmarkFlags />
           <Header />
           {sections[currentSection]}
           <Footer />
