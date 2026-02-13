@@ -222,8 +222,7 @@ algunos archivos solo necesitan existir.`,
 
   // SECCIONES VISIBLES - Control desde admin
   const [visibleSections, setVisibleSections] = useState(() => {
-    const saved = localStorage.getItem('dinamarca_visible_sections');
-    return saved ? JSON.parse(saved) : {
+    const defaults = {
       'about me': true,
       'publicaciones': true,
       'multimedia': true,
@@ -231,6 +230,15 @@ algunos archivos solo necesitan existir.`,
       'clima': true,
       'contacto': true
     };
+    try {
+      const saved = localStorage.getItem('dinamarca_visible_sections');
+      if (!saved) return defaults;
+      const parsed = JSON.parse(saved);
+      // Si alguna sección obligatoria no existe, completar con defaults
+      return { ...defaults, ...parsed };
+    } catch {
+      return defaults;
+    }
   });
 
   // ── DISEÑO / TEXTOS EDITABLES ──────────────────────────────────────────────
@@ -387,6 +395,18 @@ algunos archivos solo necesitan existir.`,
       setSyncStatus('error');
     }
   };
+
+  // ── Auto-reparar visibleSections si quedó corrupto (ej: solo una sección true) ──
+  useEffect(() => {
+    const allKeys = ['about me', 'publicaciones', 'multimedia', 'proyectos', 'clima', 'contacto'];
+    const trueCount = allKeys.filter(k => visibleSections[k]).length;
+    if (trueCount === 0) {
+      // Todos ocultos = datos corruptos, resetear
+      const all = Object.fromEntries(allKeys.map(k => [k, true]));
+      setVisibleSections(all);
+      localStorage.setItem('dinamarca_visible_sections', JSON.stringify(all));
+    }
+  }, []);
 
   const GeometricAnimation = () => {
     const [rotation, setRotation] = useState(0);
@@ -2489,7 +2509,19 @@ algunos archivos solo necesitan existir.`,
           {activeTab === 'secciones' && (
             <div className="space-y-6">
               <div className="border border-white/18 p-6">
-                <h3 className="font-mono text-white/50 text-sm mb-4">visibilidad de secciones</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-mono text-white/55 text-sm lowercase">visibilidad de secciones</h3>
+                  <button type="button"
+                    onClick={() => {
+                      const all = { 'about me': true, 'publicaciones': true, 'multimedia': true, 'proyectos': true, 'clima': true, 'contacto': true };
+                      setVisibleSections(all);
+                      localStorage.setItem('dinamarca_visible_sections', JSON.stringify(all));
+                    }}
+                    className="font-mono text-white/40 text-xs hover:text-red-500 transition-colors border border-white/18 px-3 py-1"
+                  >
+                    resetear todas
+                  </button>
+                </div>
                 <p className="font-mono text-white/55 text-xs mb-6">
                   desactivá las secciones que no querés que aparezcan en el menú
                 </p>
