@@ -434,136 +434,147 @@ algunos archivos solo necesitan existir.`,
   };
 
   const Header = () => {
-    const [glitch, setGlitch] = useState(false);
-
-    useEffect(() => {
-      const triggerGlitch = () => {
-        setGlitch(true);
-        setTimeout(() => setGlitch(false), 200);
-      };
-
-      // Glitch effect every 10 seconds
-      const interval = setInterval(() => {
-        triggerGlitch();
-      }, 10000);
-
-      return () => clearInterval(interval);
-    }, []);
+    const sections = ['about me', 'publicaciones', 'multimedia', 'proyectos', 'clima', 'contacto']
+      .filter(s => visibleSections[s]);
+    const currentIdx = sections.indexOf(currentSection);
 
     return (
-      <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-b border-white/10">
-        <nav className="container mx-auto px-4 sm:px-8 py-4 sm:py-6 flex items-center justify-between">
-          <button 
-            onClick={() => {
-              setCurrentSection('home');
-              setMobileMenuOpen(false);
-            }} 
-            className={`font-mono text-white tracking-wider hover:text-red-500 transition-colors flex items-center gap-2 ${
-              glitch ? 'glitch-effect' : ''
-            }`}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md">
+        {/* Línea superior roja delgada */}
+        <div className="h-px w-full bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-60" />
+
+        <nav className="container mx-auto px-6 sm:px-10 py-4 sm:py-5 flex items-center justify-between">
+
+          {/* Logo / nombre */}
+          <button
+            type="button"
+            onClick={() => { setCurrentSection('home'); setMobileMenuOpen(false); }}
+            className="font-mono text-white/90 text-sm tracking-[0.25em] uppercase hover:text-red-500 transition-colors duration-300 flex items-center gap-3 group"
           >
-            {siteConfig.logoUrl ? (
-              <img src={siteConfig.logoUrl} alt="logo" className="w-6 h-6 object-contain" />
-            ) : (
-              <span className="text-red-500">▪️</span>
-            )}
-            <span>{siteConfig.siteName}</span>
+            <span
+              className="inline-block w-1.5 h-1.5 bg-red-500 group-hover:scale-150 transition-transform duration-300"
+              style={{ boxShadow: '0 0 8px rgba(239,68,68,0.8)' }}
+            />
+            {siteConfig.logoUrl
+              ? <img src={siteConfig.logoUrl} alt="logo" className="h-5 object-contain" />
+              : siteConfig.siteName
+            }
           </button>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex gap-4 lg:gap-6 font-mono text-xs lg:text-sm">
-            {['about me', 'publicaciones', 'multimedia', 'proyectos', 'clima', 'contacto']
-              .filter(section => visibleSections[section])
-              .map(section => (
-              <button type="button"
+          {/* Desktop Nav */}
+          <div className="hidden md:flex items-center gap-0">
+            {sections.map((section, i) => (
+              <button
+                type="button"
                 key={section}
                 onClick={() => setCurrentSection(section)}
-                className={`hover:text-red-500 transition-colors ${
-                  currentSection === section ? 'text-red-500' : 'text-white/70'
+                className={`relative font-mono text-xs tracking-[0.2em] uppercase px-4 py-2 transition-all duration-300 group ${
+                  currentSection === section ? 'text-white' : 'text-white/35 hover:text-white/70'
                 }`}
               >
+                {currentSection === section && (
+                  <span className="absolute bottom-0 left-0 right-0 h-px bg-red-500" style={{ boxShadow: '0 0 6px rgba(239,68,68,0.6)' }} />
+                )}
                 {section}
               </button>
             ))}
+
+            {/* Dot para abrir admin */}
+            {!isAdmin && (
+              <button type="button" onClick={() => setShowAdminLogin(true)}
+                className="ml-4 w-1 h-1 bg-white/20 hover:bg-red-500 transition-colors rounded-full"
+              />
+            )}
+            {isAdmin && (
+              <button type="button" onClick={() => setCurrentSection('admin')}
+                className={`relative font-mono text-xs tracking-[0.2em] uppercase px-4 py-2 transition-all duration-300 ${
+                  currentSection === 'admin' ? 'text-red-500' : 'text-white/35 hover:text-white/70'
+                }`}
+              >
+                admin
+              </button>
+            )}
           </div>
 
-          {/* Mobile Hamburger */}
+          {/* Mobile toggle */}
           <button type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden font-mono text-white text-xl"
+            className="md:hidden font-mono text-white/60 hover:text-white transition-colors text-lg"
           >
             {mobileMenuOpen ? '×' : '≡'}
           </button>
         </nav>
 
-        {/* Mobile Menu Dropdown */}
+        {/* Línea inferior muy sutil */}
+        <div className="h-px bg-white/6" />
+
+        {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-black/95 border-t border-white/10">
-            <div className="container mx-auto px-4 py-4 flex flex-col gap-4 font-mono text-sm">
-              {['about me', 'publicaciones', 'multimedia', 'proyectos', 'clima', 'contacto']
-                .filter(section => visibleSections[section])
-                .map(section => (
-                <button type="button"
-                  key={section}
-                  onClick={() => {
-                    setCurrentSection(section);
-                    setMobileMenuOpen(false);
-                  }}
-                  className={`text-left hover:text-red-500 transition-colors ${
-                    currentSection === section ? 'text-red-500' : 'text-white/70'
+          <div className="md:hidden bg-black border-t border-white/8">
+            <div className="px-6 py-6 flex flex-col gap-1">
+              {sections.map(section => (
+                <button type="button" key={section}
+                  onClick={() => { setCurrentSection(section); setMobileMenuOpen(false); }}
+                  className={`text-left font-mono text-xs tracking-[0.25em] uppercase py-3 border-b border-white/5 transition-colors ${
+                    currentSection === section ? 'text-red-500' : 'text-white/40 hover:text-white/70'
                   }`}
                 >
+                  <span className="mr-3 text-white/20">{String(sections.indexOf(section) + 1).padStart(2, '0')}</span>
                   {section}
                 </button>
               ))}
+              {isAdmin && (
+                <button type="button"
+                  onClick={() => { setCurrentSection('admin'); setMobileMenuOpen(false); }}
+                  className="text-left font-mono text-xs tracking-[0.25em] uppercase py-3 text-red-500/70"
+                >
+                  admin
+                </button>
+              )}
             </div>
           </div>
         )}
-
-        <style>{`
-          @keyframes glitch {
-            0%, 100% { transform: translate(0); }
-            20% { transform: translate(-2px, 1px); }
-            40% { transform: translate(2px, -1px); }
-            60% { transform: translate(-1px, 2px); }
-            80% { transform: translate(1px, -2px); }
-          }
-          .glitch-effect {
-            animation: glitch 0.2s linear;
-            text-shadow: 2px 0 rgba(255, 0, 0, 0.3), -2px 0 rgba(0, 255, 255, 0.3);
-          }
-        `}</style>
       </header>
     );
   };
 
   const Footer = () => (
-    <footer className="fixed bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm border-t border-white/10">
-      <div className="container mx-auto px-4 sm:px-8 py-3 sm:py-4 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0 font-mono text-xs text-white/50">
-        <span className="text-center sm:text-left">© 2025 dinamarca — archivo digital personal</span>
-        <div className="flex gap-3 sm:gap-4 flex-wrap justify-center">
+    <footer className="fixed bottom-0 left-0 right-0 z-50 bg-black/90 backdrop-blur-md">
+      <div className="h-px bg-white/6" />
+      <div className="container mx-auto px-6 sm:px-10 py-3 sm:py-4 flex items-center justify-between gap-4">
+
+        {/* Año + nombre izquierda */}
+        <span className="font-mono text-white/20 text-xs tracking-[0.2em] hidden sm:block">
+          © 2025 — {siteConfig.siteName}
+        </span>
+
+        {/* Redes centradas */}
+        <div className="flex items-center gap-4 sm:gap-6 mx-auto sm:mx-0">
           {Object.entries(socialLinks)
             .filter(([platform]) => !hiddenSocials[platform])
             .map(([platform, url]) => (
-            <a 
+            <a
               key={platform}
-              href={url} 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="hover:text-red-500 transition-colors lowercase"
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-white/25 text-xs tracking-widest uppercase hover:text-red-500 transition-colors duration-300"
             >
               {platform}
             </a>
           ))}
-          {isAdmin && (
-            <button 
-              onClick={() => setCurrentSection('admin')}
-              className="hover:text-red-500 transition-colors"
-            >
-              admin
-            </button>
-          )}
         </div>
+
+        {/* Admin pill derecha */}
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={() => setCurrentSection('admin')}
+            className="font-mono text-white/20 text-xs tracking-widest uppercase hover:text-red-500 transition-colors hidden sm:block"
+          >
+            admin
+          </button>
+        )}
       </div>
     </footer>
   );
@@ -695,181 +706,149 @@ algunos archivos solo necesitan existir.`,
   const Publicaciones = () => (
     <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="font-mono text-white/40 text-sm sm:text-base mb-8 sm:mb-12 tracking-[0.3em] uppercase border-b border-white/10 pb-4">PUBLICACIONES</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
-          {publicaciones.filter(pub => !pub.hidden && !pub.draft).map(pub => (
-            <article 
-              key={pub.id} 
+
+        {/* Header con líneas laterales */}
+        <div className="flex items-center gap-4 mb-16 sm:mb-20">
+          <div className="h-px flex-1 bg-gradient-to-r from-red-500/50 to-transparent" />
+          <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">publicaciones</span>
+          <div className="h-px flex-1 bg-gradient-to-l from-red-500/50 to-transparent" />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {publicaciones.filter(pub => !pub.hidden && !pub.draft).map((pub, i) => (
+            <article
+              key={pub.id}
               onClick={() => setSelectedPublication(pub)}
-              className="border-l-2 border-white/10 pl-4 sm:pl-8 hover:border-red-500 transition-all duration-500 cursor-pointer group relative"
-              style={{
-                boxShadow: '0 0 0 rgba(239, 68, 68, 0)',
-                transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)'
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 40px rgba(239, 68, 68, 0.5), 0 0 80px rgba(239, 68, 68, 0.2)';
-                e.currentTarget.style.transform = 'translateX(8px)';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.boxShadow = '0 0 0 rgba(239, 68, 68, 0)';
-                e.currentTarget.style.transform = 'translateX(0)';
-              }}
+              className="group cursor-pointer border border-white/8 hover:border-red-500 transition-colors duration-300 bg-white/[0.02] hover:bg-white/[0.04] flex flex-col"
             >
-              {/* Hero image with dark gradient */}
-              <div className="relative w-full h-48 sm:h-64 mb-4 sm:mb-6 overflow-hidden -ml-4 sm:-ml-8 group/hero">
-                <img 
-                  src={pub.heroImage} 
+              {/* Imagen */}
+              <div className="relative overflow-hidden aspect-[16/9]">
+                <img
+                  src={pub.heroImage}
                   alt={pub.title}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                
-                {/* Hover particles effect */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                  {[...Array(12)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="absolute w-1 h-1 bg-white/80 rounded-full"
-                      style={{
-                        left: `${3 + i * 8}%`,
-                        bottom: '-10px',
-                        animation: `floatUpParticle 2.2s ease-out ${i * 0.1}s infinite`
-                      }}
-                    />
-                  ))}
-                  {[...Array(6)].map((_, i) => (
-                    <div
-                      key={`red-${i}`}
-                      className="absolute w-1 h-1 bg-red-500/70 rounded-full"
-                      style={{
-                        left: `${10 + i * 15}%`,
-                        bottom: '-10px',
-                        animation: `floatUpParticle 2.5s ease-out ${i * 0.15}s infinite`
-                      }}
-                    />
-                  ))}
-                </div>
-                
-                {/* Dark gradient overlay - very dark */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/90 to-black/70 z-10" />
-                
-                {/* Content over gradient */}
-                <div className="absolute bottom-0 left-4 sm:left-8 right-0 pb-4 sm:pb-6 z-20">
-                  <div className="font-mono text-white/40 text-xs mb-1 sm:mb-2">{pub.date}</div>
-                  <h2 className="font-mono text-white text-lg sm:text-2xl mb-2 lowercase">{pub.title}</h2>
+                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent" />
+                {/* Número de entrada */}
+                <div className="absolute top-4 right-4 font-mono text-white/20 text-xs">
+                  {String(i + 1).padStart(2, '0')}
                 </div>
               </div>
-              
-              <p className="font-mono text-white/60 leading-relaxed lowercase text-xs sm:text-sm">
-                {pub.preview}
-              </p>
-              
-              <button className="mt-3 sm:mt-4 font-mono text-red-500 text-xs hover:underline">
-                leer completo →
-              </button>
-              
-              <style>{`
-                @keyframes floatUpParticle {
-                  0% { 
-                    transform: translateY(0) translateX(0); 
-                    opacity: 0; 
-                  }
-                  10% { 
-                    opacity: 0.8; 
-                  }
-                  90% { 
-                    opacity: 0.3; 
-                  }
-                  100% { 
-                    transform: translateY(-150px) translateX(${(Math.random() - 0.5) * 30}px); 
-                    opacity: 0; 
-                  }
-                }
-              `}</style>
+
+              {/* Contenido */}
+              <div className="p-5 sm:p-6 flex flex-col flex-1">
+                <div className="font-mono text-white/25 text-xs tracking-widest mb-3">{pub.date}</div>
+                <h2 className="font-mono text-white text-sm sm:text-base leading-snug lowercase mb-4 flex-1">
+                  {pub.title}
+                </h2>
+                <p className="font-mono text-white/45 text-xs leading-relaxed lowercase mb-5 line-clamp-2">
+                  {pub.preview}
+                </p>
+                <div className="flex items-center gap-2 font-mono text-xs text-red-500/70 group-hover:text-red-500 transition-colors">
+                  <span className="h-px w-4 bg-red-500/50 group-hover:w-8 transition-all duration-300" />
+                  leer
+                </div>
+              </div>
             </article>
           ))}
         </div>
-        <div className="mt-12 sm:mt-16 text-center font-mono text-white/30 text-xs">
-          // agrega más publicaciones para scroll infinito
-        </div>
+
+        {publicaciones.filter(p => !p.hidden && !p.draft).length === 0 && (
+          <div className="text-center font-mono text-white/20 text-xs py-24 tracking-widest">
+            — sin publicaciones aún —
+          </div>
+        )}
       </div>
 
-      {/* Full publication view modal */}
+      {/* Modal de lectura — editorial */}
       {selectedPublication && (
-        <div 
+        <div
           className="fixed inset-0 bg-black z-50 overflow-y-auto"
           onClick={() => setSelectedPublication(null)}
         >
-          <div className="min-h-screen pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8" onClick={e => e.stopPropagation()}>
-            <div className="max-w-3xl mx-auto">
-              {/* Close button */}
-              <button 
-                onClick={() => setSelectedPublication(null)}
-                className="fixed top-4 sm:top-8 right-4 sm:right-8 font-mono text-white/50 hover:text-red-500 text-2xl sm:text-3xl transition-colors z-10"
-              >
-                ×
-              </button>
+          <div
+            className="min-h-screen"
+            onClick={e => e.stopPropagation()}
+          >
+            {/* Barra superior con close */}
+            <div className="sticky top-0 z-10 bg-black/95 backdrop-blur-md border-b border-white/8">
+              <div className="max-w-4xl mx-auto px-6 sm:px-10 py-4 flex items-center justify-between">
+                <span className="font-mono text-white/25 text-xs tracking-widest uppercase">
+                  publicaciones
+                </span>
+                <button
+                  onClick={() => setSelectedPublication(null)}
+                  className="font-mono text-white/40 hover:text-white text-xs tracking-widest uppercase transition-colors flex items-center gap-2"
+                >
+                  <span className="h-px w-4 bg-white/40" />
+                  cerrar
+                </button>
+              </div>
+            </div>
 
-              {/* Hero image full with parallax */}
-              <div className="relative w-full h-64 sm:h-96 mb-8 sm:mb-12 overflow-hidden group">
-                <img 
-                  src={selectedPublication.heroImage} 
-                  alt={selectedPublication.title}
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  style={{
-                    transform: `translateY(${window.scrollY * 0.3}px)`
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-black/50 transition-opacity group-hover:opacity-90" />
-                
-                {/* Animated gradient overlay */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-40 transition-opacity duration-700 z-10"
-                  style={{
-                    background: 'linear-gradient(135deg, rgba(239,68,68,0.4) 0%, transparent 50%, rgba(239,68,68,0.3) 100%)'
-                  }}
-                />
-                
-                <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-8 transform transition-transform duration-500 group-hover:translate-y-[-8px]">
-                  <div className="font-mono text-white/40 text-xs mb-2 transition-all duration-500 group-hover:text-red-500/70">{selectedPublication.date}</div>
-                  <h1 className="font-mono text-white text-2xl sm:text-4xl mb-4 lowercase transition-all duration-500 group-hover:text-red-50">{selectedPublication.title}</h1>
-                </div>
+            <div className="max-w-3xl mx-auto px-6 sm:px-10 pt-12 sm:pt-16 pb-32">
+
+              {/* Fecha + categoría */}
+              <div className="flex items-center gap-4 mb-8">
+                <span className="font-mono text-red-500/60 text-xs tracking-widest">{selectedPublication.date}</span>
+                <span className="h-px flex-1 bg-white/8" />
               </div>
 
-              {/* Full content */}
-              <div 
-                className="font-mono text-white/80 text-base sm:text-lg leading-[1.6] lowercase mb-8 sm:mb-12"
+              {/* Título grande */}
+              <h1 className="font-mono text-white text-2xl sm:text-4xl lowercase leading-tight mb-10 sm:mb-14">
+                {selectedPublication.title}
+              </h1>
+
+              {/* Hero image full bleed */}
+              {selectedPublication.heroImage && (
+                <div className="relative w-full aspect-[16/9] mb-12 sm:mb-16 overflow-hidden">
+                  <img
+                    src={selectedPublication.heroImage}
+                    alt={selectedPublication.title}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                </div>
+              )}
+
+              {/* Contenido */}
+              <div
+                className="font-mono text-white/70 text-sm sm:text-base leading-[2] lowercase space-y-6"
                 dangerouslySetInnerHTML={{ __html: renderPublicationContent(selectedPublication.content) }}
               />
 
-              {/* Additional images if any */}
+              {/* Imágenes adicionales */}
               {selectedPublication.images && selectedPublication.images.length > 1 && (
-                <div className="space-y-6 sm:space-y-8">
+                <div className="mt-12 sm:mt-16 space-y-4">
+                  <div className="h-px bg-white/8 mb-8" />
                   {selectedPublication.images.slice(1).map((img, idx) => (
-                    <div 
-                      key={idx} 
-                      className="relative w-full h-64 sm:h-80 overflow-hidden cursor-pointer hover:opacity-90 transition-opacity"
+                    <div
+                      key={idx}
+                      className="overflow-hidden cursor-pointer group"
                       onClick={() => setLightboxImage(img)}
                     >
-                      <img 
-                        src={img} 
+                      <img
+                        src={img}
                         alt={`imagen ${idx + 2}`}
-                        className="w-full h-full object-cover"
+                        className="w-full group-hover:opacity-90 transition-opacity"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                      <div className="absolute bottom-4 right-4 text-white/50 text-xs font-mono">
-                        click para ampliar
-                      </div>
                     </div>
                   ))}
                 </div>
               )}
 
-              {/* Back button */}
-              <button 
-                onClick={() => setSelectedPublication(null)}
-                className="mt-8 sm:mt-12 font-mono text-red-500 text-sm hover:underline"
-              >
-                ← volver a publicaciones
-              </button>
+              {/* Pie de publicación */}
+              <div className="mt-16 sm:mt-20 pt-8 border-t border-white/8 flex items-center justify-between">
+                <button
+                  onClick={() => setSelectedPublication(null)}
+                  className="font-mono text-white/30 text-xs tracking-widest uppercase hover:text-red-500 transition-colors flex items-center gap-3"
+                >
+                  <span className="h-px w-6 bg-current" />
+                  volver
+                </button>
+                <span className="font-mono text-white/15 text-xs tracking-widest">DINAMARCA</span>
+              </div>
+
             </div>
           </div>
         </div>
@@ -950,123 +929,85 @@ algunos archivos solo necesitan existir.`,
     return (
       <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="font-mono text-white/40 text-sm sm:text-base mb-8 sm:mb-12 tracking-[0.3em] uppercase border-b border-white/10 pb-4">MULTIMEDIA</h1>
+
+          <div className="flex items-center gap-4 mb-16 sm:mb-20">
+            <div className="h-px flex-1 bg-gradient-to-r from-red-500/50 to-transparent" />
+            <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">multimedia</span>
+            <div className="h-px flex-1 bg-gradient-to-l from-red-500/50 to-transparent" />
+          </div>
+
           {allImages.length === 0 ? (
-            <div className="font-mono text-white/30 text-sm text-center py-12">
-              no hay imágenes. creá publicaciones con imágenes para verlas acá.
+            <div className="text-center font-mono text-white/20 text-xs py-24 tracking-widest">
+              — sin imágenes aún —
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-              {allImages.map(item => (
-            <div
-              key={item.id}
-              onClick={() => setSelectedMedia(item)}
-              className="aspect-square bg-white/5 overflow-hidden cursor-pointer hover:ring-2 hover:ring-red-500 transition-all group relative"
-            >
-              <img 
-                src={item.url} 
-                alt={item.title}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              
-              {/* Hover particles effect */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                {[...Array(8)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="absolute w-1 h-1 bg-white/80 rounded-full"
-                    style={{
-                      left: `${10 + i * 12}%`,
-                      bottom: '-10px',
-                      animation: `floatUpParticle 2s ease-out ${i * 0.15}s infinite`
-                    }}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-px bg-white/5">
+              {allImages.map((item, i) => (
+                <div
+                  key={item.id}
+                  onClick={() => setSelectedMedia(item)}
+                  className="aspect-square bg-black overflow-hidden cursor-pointer group relative"
+                >
+                  <img
+                    src={item.url}
+                    alt={item.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-70 group-hover:opacity-100"
                   />
-                ))}
-                {[...Array(4)].map((_, i) => (
-                  <div
-                    key={`red-${i}`}
-                    className="absolute w-1 h-1 bg-red-500/70 rounded-full"
-                    style={{
-                      left: `${20 + i * 20}%`,
-                      bottom: '-10px',
-                      animation: `floatUpParticle 2.5s ease-out ${i * 0.2}s infinite`
-                    }}
-                  />
-                ))}
-              </div>
-              
-              <div className="absolute inset-0 bg-black/80 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center p-4 z-10">
-                <div className="text-center">
-                  <div className="font-mono text-white text-xs sm:text-sm mb-2 lowercase">{item.title}</div>
-                  <div className="font-mono text-white/60 text-xs lowercase">{item.desc}</div>
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-start justify-end p-4">
+                    <div className="font-mono text-white text-xs lowercase line-clamp-1">{item.title}</div>
+                    <div className="font-mono text-white/40 text-xs mt-1">{String(i + 1).padStart(2, '0')}</div>
+                  </div>
                 </div>
-              </div>
-              
-              <style>{`
-                @keyframes floatUpParticle {
-                  0% { 
-                    transform: translateY(0) translateX(0); 
-                    opacity: 0; 
-                  }
-                  10% { 
-                    opacity: 0.8; 
-                  }
-                  90% { 
-                    opacity: 0.3; 
-                  }
-                  100% { 
-                    transform: translateY(-150px) translateX(${(Math.random() - 0.5) * 30}px); 
-                    opacity: 0; 
-                  }
-                }
-              `}</style>
+              ))}
             </div>
-          ))}
-        </div>
           )}
-        <div className="mt-6 sm:mt-8 text-center font-mono text-white/30 text-xs">
-          // todas las imágenes de publicaciones
         </div>
-      </div>
-      
-      {selectedMedia && (
-        <div 
-          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 sm:p-8"
-          onClick={() => setSelectedMedia(null)}
-        >
-          <div className="max-w-4xl w-full" onClick={e => e.stopPropagation()}>
-            <img src={selectedMedia.url} alt={selectedMedia.title} className="w-full" />
-            <div className="mt-3 sm:mt-4 font-mono text-white text-base sm:text-lg lowercase">{selectedMedia.title}</div>
-            <div className="mt-2 font-mono text-white/50 text-xs sm:text-sm lowercase">{selectedMedia.desc}</div>
-            <button 
-              onClick={() => {
-                setSelectedMedia(null);
-                setCurrentSection('publicaciones');
-                // Encontrar y abrir la publicación específica
-                setTimeout(() => {
-                  const pub = publicaciones.find(p => p.id === selectedMedia.pubId);
-                  if (pub) {
-                    setSelectedPublication(pub);
-                  }
-                }, 100);
-              }}
-              className="mt-3 sm:mt-4 font-mono text-red-500 text-xs hover:underline"
-            >
-              → ver publicación relacionada
-            </button>
+
+        {selectedMedia && (
+          <div
+            className="fixed inset-0 bg-black/98 z-50 flex items-center justify-center p-4 sm:p-8"
+            onClick={() => setSelectedMedia(null)}
+          >
+            <div className="max-w-4xl w-full" onClick={e => e.stopPropagation()}>
+              <img src={selectedMedia.url} alt={selectedMedia.title} className="w-full" />
+              <div className="mt-6 flex items-center justify-between">
+                <div>
+                  <div className="font-mono text-white text-sm lowercase">{selectedMedia.title}</div>
+                  <div className="font-mono text-white/30 text-xs mt-1 lowercase">{selectedMedia.desc}</div>
+                </div>
+                <button
+                  onClick={() => {
+                    setSelectedMedia(null);
+                    setCurrentSection('publicaciones');
+                    setTimeout(() => {
+                      const pub = publicaciones.find(p => p.id === selectedMedia.pubId);
+                      if (pub) setSelectedPublication(pub);
+                    }, 100);
+                  }}
+                  className="font-mono text-red-500/70 text-xs hover:text-red-500 transition-colors flex items-center gap-2"
+                >
+                  ver publicación <span className="h-px w-4 bg-red-500/70" />
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     );
   };
 
   const Proyectos = () => (
     <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
       <div className="max-w-7xl mx-auto">
-        <h1 className="font-mono text-white/40 text-sm sm:text-base mb-8 sm:mb-12 tracking-[0.3em] uppercase border-b border-white/10 pb-4">PROYECTOS</h1>
+
+        <div className="flex items-center gap-4 mb-16 sm:mb-20">
+          <div className="h-px flex-1 bg-gradient-to-r from-red-500/50 to-transparent" />
+          <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">proyectos</span>
+          <div className="h-px flex-1 bg-gradient-to-l from-red-500/50 to-transparent" />
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-          {projects.map(project => (
+          {projects.map((project, i) => (
             <div
               key={project.id}
               onClick={() => {
@@ -1074,105 +1015,52 @@ algunos archivos solo necesitan existir.`,
                   window.open(project.link, '_blank');
                 }
               }}
-              className="aspect-[4/3] bg-white/5 border border-white/10 hover:border-red-500 transition-all cursor-pointer flex flex-col items-center justify-center p-4 sm:p-6 group relative overflow-hidden"
+              className="aspect-[4/3] bg-white/[0.02] border border-white/8 hover:border-red-500 transition-colors duration-300 cursor-pointer flex flex-col items-center justify-center p-6 sm:p-8 group relative overflow-hidden"
             >
-              {/* Hover particles effect */}
-              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none">
-                {[...Array(8)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="absolute w-1 h-1 bg-white/80 rounded-full"
-                    style={{
-                      left: `${10 + i * 12}%`,
-                      bottom: '-10px',
-                      animation: `floatUpParticle 2s ease-out ${i * 0.15}s infinite`
-                    }}
-                  />
-                ))}
-                {[...Array(4)].map((_, i) => (
-                  <div
-                    key={`red-${i}`}
-                    className="absolute w-1 h-1 bg-red-500/70 rounded-full"
-                    style={{
-                      left: `${20 + i * 20}%`,
-                      bottom: '-10px',
-                      animation: `floatUpParticle 2.5s ease-out ${i * 0.2}s infinite`
-                    }}
-                  />
-                ))}
+              {/* Número decorativo fondo */}
+              <div className="absolute top-4 right-4 font-mono text-white/8 text-xs">
+                {String(i + 1).padStart(2, '0')}
               </div>
-              
+
               {project.logoImage ? (
-                <img 
-                  src={project.logoImage} 
-                  alt={project.name} 
-                  className="w-[85px] h-[85px] object-contain mb-3 group-hover:scale-110 transition-transform relative z-10" 
+                <img
+                  src={project.logoImage}
+                  alt={project.name}
+                  className="w-20 h-20 object-contain mb-5 opacity-60 group-hover:opacity-100 transition-opacity"
                 />
               ) : (
-                <div className="text-4xl sm:text-5xl mb-3 group-hover:scale-110 transition-transform relative z-10">{project.logo || '▪️'}</div>
+                <div className="text-4xl sm:text-5xl mb-5 opacity-40 group-hover:opacity-80 transition-opacity">
+                  {project.logo || '▪'}
+                </div>
               )}
-              <h3 className="font-mono text-white text-base sm:text-lg mb-1 lowercase relative z-10 text-center">{project.name}</h3>
-              <p className="font-mono text-white/40 text-xs lowercase relative z-10 mb-2 text-center">{project.type}</p>
-              <p className="font-mono text-white/60 text-xs lowercase relative z-10 text-center line-clamp-2">{project.description}</p>
-              
-              <style>{`
-                @keyframes floatUpParticle {
-                  0% { 
-                    transform: translateY(0) translateX(0); 
-                    opacity: 0; 
-                  }
-                  10% { 
-                    opacity: 0.8; 
-                  }
-                  90% { 
-                    opacity: 0.3; 
-                  }
-                  100% { 
-                    transform: translateY(-150px) translateX(${(Math.random() - 0.5) * 30}px); 
-                    opacity: 0; 
-                  }
-                }
-                .line-clamp-2 {
-                  display: -webkit-box;
-                  -webkit-line-clamp: 2;
-                  -webkit-box-orient: vertical;
-                  overflow: hidden;
-                }
-              `}</style>
+
+              <h3 className="font-mono text-white text-sm sm:text-base mb-1 lowercase text-center">
+                {project.name}
+              </h3>
+              <p className="font-mono text-red-500/50 text-xs lowercase mb-3 text-center tracking-widest">
+                {project.type}
+              </p>
+              <p className="font-mono text-white/35 text-xs lowercase text-center leading-relaxed line-clamp-2">
+                {project.description}
+              </p>
+
+              {project.link && project.link !== '#' && (
+                <div className="absolute bottom-4 left-0 right-0 flex justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                  <span className="font-mono text-white/40 text-xs flex items-center gap-2">
+                    <span className="h-px w-4 bg-red-500/60" /> abrir
+                  </span>
+                </div>
+              )}
             </div>
           ))}
         </div>
-      </div>
 
-      {selectedProject && (
-        <div 
-          className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4 sm:p-8"
-          onClick={() => setSelectedProject(null)}
-        >
-          <div className="max-w-2xl w-full bg-black border border-white/20 p-8 sm:p-12" onClick={e => e.stopPropagation()}>
-            <div className="text-5xl sm:text-6xl mb-6">{selectedProject.logo}</div>
-            <h2 className="font-mono text-white text-2xl sm:text-3xl mb-2 lowercase">{selectedProject.name}</h2>
-            <p className="font-mono text-white/40 text-sm mb-6 lowercase">{selectedProject.type}</p>
-            <p className="font-mono text-white/70 leading-relaxed lowercase text-sm sm:text-base">{selectedProject.description}</p>
-            {selectedProject.link && selectedProject.link !== '#' && (
-              <a 
-                href={selectedProject.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-6 inline-block font-mono text-red-500 text-sm hover:underline"
-              >
-                visitar proyecto →
-              </a>
-            )}
-            <button 
-              onClick={() => setSelectedProject(null)}
-              className="mt-6 sm:mt-8 block font-mono text-white/50 text-sm hover:text-red-500"
-            >
-              ← volver
-            </button>
+        {projects.length === 0 && (
+          <div className="text-center font-mono text-white/20 text-xs py-24 tracking-widest">
+            — sin proyectos aún —
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 
@@ -1182,58 +1070,95 @@ algunos archivos solo necesitan existir.`,
 
     const handleSubmit = (e) => {
       e.preventDefault();
-      // Simulate email send
       setSubmitted(true);
       setTimeout(() => setSubmitted(false), 3000);
     };
 
     return (
       <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
-        <div className="max-w-2xl mx-auto">
-          <h1 className="font-mono text-white/40 text-sm sm:text-base mb-8 sm:mb-12 tracking-[0.3em] uppercase border-b border-white/10 pb-4">CONTACTO</h1>
-          
-          {submitted ? (
-            <div className="font-mono text-red-500 lowercase text-sm sm:text-base">mensaje enviado. gracias.</div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-              <div>
-                <input
-                  type="text"
-                  placeholder="nombre"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="w-full bg-white/5 border border-white/10 px-3 sm:px-4 py-2 sm:py-3 font-mono text-white text-sm sm:text-base lowercase focus:border-red-500 focus:outline-none transition-colors"
-                  required
-                />
-              </div>
-              <div>
-                <input
-                  type="email"
-                  placeholder="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  className="w-full bg-white/5 border border-white/10 px-3 sm:px-4 py-2 sm:py-3 font-mono text-white text-sm sm:text-base lowercase focus:border-red-500 focus:outline-none transition-colors"
-                  required
-                />
-              </div>
-              <div>
-                <textarea
-                  placeholder="mensaje"
-                  value={formData.message}
-                  onChange={(e) => setFormData({...formData, message: e.target.value})}
-                  rows="6"
-                  className="w-full bg-white/5 border border-white/10 px-3 sm:px-4 py-2 sm:py-3 font-mono text-white text-sm sm:text-base lowercase focus:border-red-500 focus:outline-none transition-colors resize-none"
-                  required
-                />
-              </div>
-              <button type="button"
-                type="submit"
-                className="font-mono text-white border border-white/20 px-6 sm:px-8 py-2 sm:py-3 text-sm sm:text-base hover:bg-red-500 hover:border-red-500 transition-all lowercase"
-              >
-                enviar →
-              </button>
-            </form>
-          )}
+        <div className="max-w-5xl mx-auto">
+
+          <div className="flex items-center gap-4 mb-16 sm:mb-20">
+            <div className="h-px flex-1 bg-gradient-to-r from-red-500/50 to-transparent" />
+            <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">contacto</span>
+            <div className="h-px flex-1 bg-gradient-to-l from-red-500/50 to-transparent" />
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-[1fr_2fr] gap-16 sm:gap-24">
+
+            {/* Columna izquierda: redes */}
+            <div className="space-y-1">
+              <div className="font-mono text-white/20 text-xs tracking-widest uppercase mb-6">redes</div>
+              {Object.entries(socialLinks)
+                .filter(([p]) => !hiddenSocials[p])
+                .map(([platform, url]) => (
+                <a
+                  key={platform}
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 py-3 border-b border-white/5 group"
+                >
+                  <span className="h-px w-3 bg-white/20 group-hover:w-6 group-hover:bg-red-500 transition-all duration-300" />
+                  <span className="font-mono text-white/40 text-xs lowercase tracking-wider group-hover:text-white/80 transition-colors">
+                    {platform}
+                  </span>
+                </a>
+              ))}
+            </div>
+
+            {/* Columna derecha: formulario */}
+            <div>
+              {submitted ? (
+                <div className="flex items-center gap-4 py-8">
+                  <span className="h-px w-8 bg-red-500" />
+                  <span className="font-mono text-white/60 text-sm lowercase">mensaje enviado.</span>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {[
+                    { key: 'name', placeholder: 'nombre', type: 'text' },
+                    { key: 'email', placeholder: 'email', type: 'email' },
+                  ].map(field => (
+                    <div key={field.key} className="relative">
+                      <div className="absolute left-0 top-0 bottom-0 w-px bg-white/10 group-focus-within:bg-red-500" />
+                      <input
+                        type={field.type}
+                        placeholder={field.placeholder}
+                        value={formData[field.key]}
+                        onChange={e => setFormData({ ...formData, [field.key]: e.target.value })}
+                        className="w-full bg-transparent border-0 border-b border-white/10 focus:border-red-500 px-0 py-3 font-mono text-white text-sm lowercase focus:outline-none transition-colors placeholder:text-white/20"
+                        required
+                      />
+                    </div>
+                  ))}
+                  <div className="relative">
+                    <textarea
+                      placeholder="mensaje"
+                      value={formData.message}
+                      onChange={e => setFormData({ ...formData, message: e.target.value })}
+                      rows="5"
+                      className="w-full bg-white/[0.02] border border-white/8 focus:border-red-500 px-4 py-3 font-mono text-white text-sm lowercase focus:outline-none resize-none transition-colors placeholder:text-white/20"
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="font-mono text-white/60 text-xs tracking-widest uppercase hover:text-white transition-colors flex items-center gap-4"
+                  >
+                    <span className="h-px w-8 bg-red-500/60" />
+                    enviar
+                  </button>
+                </form>
+              )}
+            </div>
+          </div>
+
+          {/* Footer decorativo */}
+          <div className="mt-24 sm:mt-32 pt-8 border-t border-white/5 flex justify-between items-center">
+            <span className="font-mono text-white/15 text-xs tracking-widest">DINAMARCA</span>
+            <span className="font-mono text-white/15 text-xs tracking-widest">2025</span>
+          </div>
         </div>
       </div>
     );
@@ -3079,46 +3004,55 @@ algunos archivos solo necesitan existir.`,
     return (
       <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto">
-          <h1 className="font-mono text-white/40 text-sm sm:text-base mb-8 sm:mb-12 tracking-[0.3em] uppercase border-b border-white/10 pb-4">CLIMA</h1>
+
+          <div className="flex items-center gap-4 mb-16 sm:mb-20">
+            <div className="h-px flex-1 bg-gradient-to-r from-red-500/50 to-transparent" />
+            <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">clima</span>
+            <div className="h-px flex-1 bg-gradient-to-l from-red-500/50 to-transparent" />
+          </div>
+
           {loading ? (
-            <div className="font-mono text-white/30 text-sm text-center py-12">
-              cargando temperaturas en vivo...
+            <div className="text-center font-mono text-white/20 text-xs py-24 tracking-widest">
+              — cargando —
             </div>
           ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-px bg-white/5">
               {ciudadesConFotos.map((ciudad, idx) => {
                 const weather = weatherData[ciudad.nombre] || { temp: '--', description: 'sin datos' };
-                
                 return (
-                  <div 
-                    key={idx} 
-                    className="relative border border-white/10 p-4 hover:border-red-500/50 transition-all overflow-hidden group"
+                  <div
+                    key={idx}
+                    className="relative bg-black overflow-hidden group aspect-[3/4]"
                   >
-                    {/* Imagen de fondo con degradado muy oscuro */}
-                  <div 
-                    className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity"
-                    style={{
-                      backgroundImage: `linear-gradient(to right, rgba(0,0,0,0.95), rgba(0,0,0,0.7)), url(${ciudad.imagen})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center'
-                    }}
-                  />
-                  
-                  {/* Contenido sobre la imagen */}
-                  <div className="relative z-10">
-                    <div className="font-mono text-white text-sm mb-2 lowercase">{ciudad.nombre}</div>
-                    <div className="font-mono text-white/50 text-xs mb-2 lowercase">{weather.description}</div>
-                    <div 
-                      className="font-mono text-2xl font-bold" 
-                      style={{color: getColorForTemp(weather.temp)}}
-                    >
-                      {weather.temp}°
+                    {/* Imagen de fondo */}
+                    <div
+                      className="absolute inset-0 opacity-25 group-hover:opacity-50 transition-opacity duration-500"
+                      style={{
+                        backgroundImage: `url(${ciudad.imagen})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-black/30" />
+
+                    {/* Borde rojo en hover */}
+                    <div className="absolute inset-0 border border-transparent group-hover:border-red-500/60 transition-colors duration-300" />
+
+                    {/* Contenido */}
+                    <div className="absolute inset-0 flex flex-col justify-end p-4">
+                      <div
+                        className="font-mono text-3xl sm:text-4xl mb-2 leading-none"
+                        style={{ color: getColorForTemp(weather.temp) }}
+                      >
+                        {weather.temp}°
+                      </div>
+                      <div className="font-mono text-white text-xs lowercase leading-tight">{ciudad.nombre}</div>
+                      <div className="font-mono text-white/30 text-xs lowercase mt-1 leading-tight">{weather.description}</div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
           )}
         </div>
       </div>
