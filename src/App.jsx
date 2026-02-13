@@ -11,6 +11,40 @@ const hashPassword = async (password) => {
     .join('');
 };
 
+// ── CONSTANTE ESTÁTICA fuera del componente para evitar recreación en cada render ──
+const CIUDADES_CLIMA = [
+  { nombre: 'Buenos Aires', imagen: 'https://i.pinimg.com/1200x/2c/10/43/2c104376c2708609bdc442a63146247e.jpg', coords: '-34.6037,-58.3816' },
+  { nombre: 'Ushuaia', imagen: 'https://i.pinimg.com/1200x/a4/c1/a8/a4c1a858d01267fa2df562d1cb84f37c.jpg', coords: '-54.8019,-68.3030' },
+  { nombre: 'El Calafate', imagen: 'https://i.pinimg.com/1200x/87/b9/b4/87b9b413c6b3719971bf5d4c6f40e2ef.jpg', coords: '-50.3373,-72.2647' },
+  { nombre: 'Puerto Madryn', imagen: 'https://i.pinimg.com/1200x/15/00/e4/1500e4174f1246e6a221f37e680f23a9.jpg', coords: '-42.7692,-65.0391' },
+  { nombre: 'San Martin de los Andes', imagen: 'https://i.pinimg.com/736x/58/8f/ee/588fee60b3355853ef196f691973fee2.jpg', coords: '-40.1572,-71.3532' },
+  { nombre: 'Viedma', imagen: 'https://i.pinimg.com/736x/0b/66/e8/0b66e80ef5a58a19dc74b1038365f499.jpg', coords: '-40.8135,-62.9967' },
+  { nombre: 'Cuatral Co', imagen: 'https://i.pinimg.com/1200x/28/13/fc/2813fc0703ffa2de77a9055d9f7d0595.jpg', coords: '-37.9167,-68.3500' },
+  { nombre: 'Mar del Plata', imagen: 'https://i.pinimg.com/1200x/c6/0a/41/c60a411cc5cc25641f9b5b8b08ff5bb7.jpg', coords: '-38.0055,-57.5426' },
+  { nombre: 'Ramos Mejia', imagen: 'https://i.pinimg.com/1200x/f8/34/77/f83477dc37b8f54da13fe224fd0c2d43.jpg', coords: '-34.6417,-58.5647' },
+  { nombre: 'Trenque Lauquen', imagen: 'https://i.pinimg.com/1200x/d6/23/13/d62313512542dfa69e90b8e2590eb800.jpg', coords: '-35.9733,-62.7306' },
+  { nombre: 'Santa Rosa', imagen: 'https://i.pinimg.com/1200x/62/0c/52/620c52a60e8a01e73a6bc636ee3b739f.jpg', coords: '-36.6167,-64.2833' },
+  { nombre: 'Villa Mercedes', imagen: 'https://i.pinimg.com/736x/cc/25/36/cc25360301068e62dc6f515824c55e9c.jpg', coords: '-33.6758,-65.4603' },
+  { nombre: 'Mendoza', imagen: 'https://i.pinimg.com/736x/3d/42/6e/3d426e2055699351ab582bf8efe2c7d0.jpg', coords: '-32.8895,-68.8458' },
+  { nombre: 'Venado Tuerto', imagen: 'https://i.pinimg.com/1200x/8e/85/68/8e856850e4ad3538bb18b1c0c4c47846.jpg', coords: '-33.7456,-61.9689' },
+  { nombre: 'Rio Cuarto', imagen: 'https://i.pinimg.com/1200x/3a/ea/4c/3aea4c4fd23faf003452b97f82a266fb.jpg', coords: '-33.1239,-64.3494' },
+  { nombre: 'Villa Gral Belgrano', imagen: 'https://i.pinimg.com/1200x/50/04/8b/50048b76f2e7a876b8502e4479657c2d.jpg', coords: '-31.9772,-64.5597' },
+  { nombre: 'Concordia', imagen: 'https://i.pinimg.com/1200x/b8/3e/0a/b83e0ac7738a47c84bc79d16430d8217.jpg', coords: '-31.3933,-58.0208' },
+  { nombre: 'Chilecito', imagen: 'https://i.pinimg.com/1200x/bb/c6/5f/bbc65f94c4b43052c0c6ec86e943b6e6.jpg', coords: '-29.1639,-67.4981' },
+  { nombre: 'Curuzu Cuatia', imagen: 'https://i.pinimg.com/736x/b6/f6/5f/b6f65f6870ddf6d2222ea143c2aef59d.jpg', coords: '-29.7917,-58.0528' },
+  { nombre: 'Fiambala', imagen: 'https://i.pinimg.com/736x/b2/ff/3f/b2ff3fddfce674a52ad9c6d1eb99ad15.jpg', coords: '-27.6917,-67.6139' },
+  { nombre: 'Cafayate', imagen: 'https://i.pinimg.com/736x/b4/94/36/b494368665c2a6011e8697354b7b6697.jpg', coords: '-26.0733,-65.9789' },
+  { nombre: 'Purmamarca', imagen: 'https://i.pinimg.com/1200x/4d/fa/94/4dfa947b71227e0be3df8492159f579b.jpg', coords: '-23.7419,-65.4986' },
+  { nombre: 'Clorinda', imagen: 'https://i.pinimg.com/736x/59/9e/79/599e79a2b3e94edbce4e8dc87fa3e800.jpg', coords: '-25.2844,-57.7186' },
+  { nombre: 'Puerto Iguazu', imagen: 'https://i.pinimg.com/736x/82/24/56/822456f46023589086411105591e6e87.jpg', coords: '-25.5978,-54.5789' },
+  { nombre: 'Tartagal', imagen: 'https://i.pinimg.com/1200x/04/68/af/0468af79324a6e8beb736f61566a2bd5.jpg', coords: '-22.5164,-63.8014' },
+  { nombre: 'Islas Malvinas', imagen: 'https://i.pinimg.com/1200x/99/77/be/9977beb0331a3dd05940e218dad96ef7.jpg', coords: '-51.7963,-59.5236' },
+  { nombre: 'San Isidro', imagen: 'https://i.pinimg.com/736x/4d/32/1b/4d321b5f6293248cdf15936a3c07200b.jpg', coords: '-34.4708,-58.5278' },
+  { nombre: 'La Plata', imagen: 'https://i.pinimg.com/736x/c5/a7/21/c5a721baeddadca3e337a7ee5cc631b1.jpg', coords: '-34.9214,-57.9544' },
+  { nombre: 'Pehuajo', imagen: 'https://i.pinimg.com/736x/a0/a8/3b/a0a83be488519a7ddbd226de91eb9b87.jpg', coords: '-35.8119,-61.8981' },
+  { nombre: 'Base Marambio', imagen: 'https://i.pinimg.com/736x/9e/d6/f0/9ed6f02cd9aba22b33ac503c03ba4643.jpg', coords: '-64.2400,-56.6267' },
+];
+
 const DINAMARCA = () => {
   const [currentSection, setCurrentSection] = useState('home');
   const [selectedMedia, setSelectedMedia] = useState(null);
@@ -199,6 +233,42 @@ algunos archivos solo necesitan existir.`,
     };
   });
 
+  // ── DISEÑO / TEXTOS EDITABLES ──────────────────────────────────────────────
+  const [tickerText, setTickerText] = useState(() => {
+    const s = localStorage.getItem('dinamarca_ticker');
+    return s || 'ARCHIVO DIGITAL PERSONAL &nbsp;◈&nbsp; DINAMARCA &nbsp;◆&nbsp; EN PROCESO &nbsp;◈&nbsp; 2025 &nbsp;◆&nbsp;&nbsp;';
+  });
+
+  const [aboutTags, setAboutTags] = useState(() => {
+    const s = localStorage.getItem('dinamarca_about_tags');
+    return s ? JSON.parse(s) : ['estética', 'referencias visuales', 'coleccionar', 'obsesiones', 'archivos', 'silencio'];
+  });
+
+  const [aboutDataGrid, setAboutDataGrid] = useState(() => {
+    const s = localStorage.getItem('dinamarca_about_datagrid');
+    return s ? JSON.parse(s) : [
+      { label: 'formato', value: 'archivo' },
+      { label: 'estado', value: 'en proceso' },
+      { label: 'versión', value: '∞' },
+      { label: 'origen', value: 'argentina' },
+      { label: 'tipo', value: 'personal' },
+      { label: 'acceso', value: 'abierto' },
+    ];
+  });
+
+  const [aboutQuote, setAboutQuote] = useState(() => {
+    const s = localStorage.getItem('dinamarca_about_quote');
+    return s || '// esto no es un portfolio.\nes un archivo de mi cabeza.';
+  });
+
+  const [contactoEmail, setContactoEmail] = useState(() => {
+    return localStorage.getItem('dinamarca_contacto_email') || '';
+  });
+
+  const [footerBrand, setFooterBrand] = useState(() => {
+    return localStorage.getItem('dinamarca_footer_brand') || 'DINAMARCA';
+  });
+
   // GOOGLE ANALYTICS ID
   const [analyticsId, setAnalyticsId] = useState(() => {
     const saved = localStorage.getItem('dinamarca_analytics_id');
@@ -350,11 +420,11 @@ algunos archivos solo necesitan existir.`,
               transform: 'rotateY(-90deg) translateZ(150px)',
               background: 'linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,0,0,0.15) 100%)'
             }} />
-            <div className="absolute w-full h-full border border-white/10" style={{ 
+            <div className="absolute w-full h-full border border-white/18" style={{ 
               transform: 'rotateX(90deg) translateZ(150px)',
               background: 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)'
             }} />
-            <div className="absolute w-full h-full border border-white/10" style={{ 
+            <div className="absolute w-full h-full border border-white/18" style={{ 
               transform: 'rotateX(-90deg) translateZ(150px)',
               background: 'radial-gradient(circle, rgba(255,0,0,0.1) 0%, transparent 70%)'
             }} />
@@ -369,7 +439,7 @@ algunos archivos solo necesitan existir.`,
             {/* Orbiting rings */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-60 h-60 rounded-full border border-red-500/20"
                  style={{ transform: `rotateX(${rotation * 2}deg)`, transformStyle: 'preserve-3d' }} />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-52 h-52 rounded-full border border-white/10"
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-52 h-52 rounded-full border border-white/18"
                  style={{ transform: `rotateY(${rotation * 1.5}deg)`, transformStyle: 'preserve-3d' }} />
           </div>
         </div>
@@ -512,7 +582,7 @@ algunos archivos solo necesitan existir.`,
           <button
             type="button"
             onClick={() => { setCurrentSection('home'); setMobileMenuOpen(false); }}
-            className="font-mono text-white/90 text-sm tracking-[0.25em] uppercase hover:text-red-500 transition-colors duration-300 flex items-center gap-3 group"
+            className="font-mono text-white/95 text-sm tracking-[0.25em] uppercase hover:text-red-500 transition-colors duration-300 flex items-center gap-3 group"
           >
             <span
               className="inline-block w-1.5 h-1.5 bg-red-500 group-hover:scale-150 transition-transform duration-300"
@@ -532,7 +602,7 @@ algunos archivos solo necesitan existir.`,
                 key={section}
                 onClick={() => setCurrentSection(section)}
                 className={`relative font-mono text-xs tracking-[0.2em] uppercase px-4 py-2 transition-all duration-300 group ${
-                  currentSection === section ? 'text-white' : 'text-white/35 hover:text-white/70'
+                  currentSection === section ? 'text-white' : 'text-white/78 hover:text-white/95'
                 }`}
               >
                 {currentSection === section && (
@@ -551,7 +621,7 @@ algunos archivos solo necesitan existir.`,
             {isAdmin && (
               <button type="button" onClick={() => setCurrentSection('admin')}
                 className={`relative font-mono text-xs tracking-[0.2em] uppercase px-4 py-2 transition-all duration-300 ${
-                  currentSection === 'admin' ? 'text-red-500' : 'text-white/35 hover:text-white/70'
+                  currentSection === 'admin' ? 'text-red-500' : 'text-white/78 hover:text-white/95'
                 }`}
               >
                 admin
@@ -562,7 +632,7 @@ algunos archivos solo necesitan existir.`,
           {/* Mobile toggle */}
           <button type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden font-mono text-white/60 hover:text-white transition-colors text-lg"
+            className="md:hidden font-mono text-white/78 hover:text-white transition-colors text-lg"
           >
             {mobileMenuOpen ? '×' : '≡'}
           </button>
@@ -573,16 +643,16 @@ algunos archivos solo necesitan existir.`,
 
         {/* Mobile menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-black border-t border-white/8">
+          <div className="md:hidden bg-black border-t border-white/15">
             <div className="px-6 py-6 flex flex-col gap-1">
               {sections.map(section => (
                 <button type="button" key={section}
                   onClick={() => { setCurrentSection(section); setMobileMenuOpen(false); }}
-                  className={`text-left font-mono text-xs tracking-[0.25em] uppercase py-3 border-b border-white/5 transition-colors ${
-                    currentSection === section ? 'text-red-500' : 'text-white/40 hover:text-white/70'
+                  className={`text-left font-mono text-xs tracking-[0.25em] uppercase py-3 border-b border-white/12 transition-colors ${
+                    currentSection === section ? 'text-red-500' : 'text-white/65 hover:text-white/95'
                   }`}
                 >
-                  <span className="mr-3 text-white/20">{String(sections.indexOf(section) + 1).padStart(2, '0')}</span>
+                  <span className="mr-3 text-white/95">{String(sections.indexOf(section) + 1).padStart(2, '0')}</span>
                   {section}
                 </button>
               ))}
@@ -607,7 +677,7 @@ algunos archivos solo necesitan existir.`,
       <div className="container mx-auto px-6 sm:px-10 py-3 sm:py-4 flex items-center justify-between gap-4">
 
         {/* Copyright izquierda */}
-        <span className="font-mono text-white/20 text-xs tracking-[0.2em]">
+        <span className="font-mono text-white/95 text-xs tracking-[0.2em]">
           © 2025 — {siteConfig.siteName}
         </span>
 
@@ -616,7 +686,7 @@ algunos archivos solo necesitan existir.`,
           <button
             type="button"
             onClick={() => setCurrentSection('admin')}
-            className="font-mono text-white/20 text-xs tracking-widest uppercase hover:text-red-500 transition-colors"
+            className="font-mono text-white/95 text-xs tracking-widest uppercase hover:text-red-500 transition-colors"
           >
             admin
           </button>
@@ -639,18 +709,17 @@ algunos archivos solo necesitan existir.`,
         <div className="mb-16 sm:mb-24">
           <div className="flex items-center gap-4">
             <div className="h-px flex-1 bg-gradient-to-r from-red-500/60 to-transparent" />
-            <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">about</span>
+            <span className="font-mono text-white/55 text-xs tracking-[0.4em] uppercase">about</span>
             <div className="h-px flex-1 bg-gradient-to-l from-red-500/60 to-transparent" />
           </div>
         </div>
 
         {/* Ticker corriendo — línea de texto horizontal */}
-        <div className="overflow-hidden mb-16 border-t border-b border-white/5 py-3">
+        <div className="overflow-hidden mb-16 border-t border-b border-white/12 py-3">
           <div style={{ display: 'flex', animation: 'tickerScroll 28s linear infinite', whiteSpace: 'nowrap' }}>
             {[...Array(4)].map((_, i) => (
-              <span key={i} className="font-mono text-white/10 text-xs tracking-[0.3em] uppercase mr-12 flex-shrink-0">
-                ARCHIVO DIGITAL PERSONAL &nbsp;◈&nbsp; DINAMARCA &nbsp;◆&nbsp; EN PROCESO &nbsp;◈&nbsp; 2025 &nbsp;◆&nbsp;&nbsp;
-              </span>
+              <span key={i} className="font-mono text-white/45 text-xs tracking-[0.3em] uppercase mr-12 flex-shrink-0"
+                dangerouslySetInnerHTML={{ __html: tickerText }} />
             ))}
           </div>
           <style>{`
@@ -673,17 +742,17 @@ algunos archivos solo necesitan existir.`,
                 style={{ textShadow: '0 0 80px rgba(239,68,68,0.12)' }}>◈</div>
 
               <div className="space-y-3">
-                {['estética', 'referencias visuales', 'coleccionar', 'obsesiones', 'archivos', 'silencio'].map((tag, i) => (
-                  <div key={tag} className="flex items-center gap-3" style={{ opacity: 1 - i * 0.1 }}>
+                {aboutTags.map((tag, i) => (
+                  <div key={i} className="flex items-center gap-3" style={{ opacity: 1 - i * 0.1 }}>
                     <div className="w-1 h-1 rounded-full flex-shrink-0"
-                      style={{ background: i < 2 ? '#ef4444' : 'rgba(255,255,255,0.25)' }} />
-                    <span className="font-mono text-white/35 text-xs lowercase tracking-wider">{tag}</span>
+                      style={{ background: i < 2 ? '#ef4444' : 'rgba(255,255,255,0.35)' }} />
+                    <span className="font-mono text-white/78 text-xs lowercase tracking-wider">{tag}</span>
                   </div>
                 ))}
               </div>
 
               {/* Número grande */}
-              <div className="font-mono text-white/8 text-6xl font-bold select-none leading-none">001</div>
+              <div className="font-mono text-white/15 text-6xl font-bold select-none leading-none">001</div>
 
               {/* Línea de dots vertical */}
               <div className="flex flex-col gap-2 items-start pl-1">
@@ -701,7 +770,7 @@ algunos archivos solo necesitan existir.`,
 
             {/* Texto principal */}
             <div className="border-l-2 border-red-500 pl-6 sm:pl-8">
-              <div className="font-mono text-white/85 text-base sm:text-lg leading-[2.1] lowercase whitespace-pre-line tracking-wide">
+              <div className="font-mono text-white/95 text-base sm:text-lg leading-[2.1] lowercase whitespace-pre-line tracking-wide">
                 {aboutText}
               </div>
             </div>
@@ -713,19 +782,12 @@ algunos archivos solo necesitan existir.`,
               <div className="h-px flex-1 bg-white/8" />
             </div>
 
-            {/* Grid de datos — 5 celdas */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-px" style={{ background: 'rgba(255,255,255,0.04)' }}>
-              {[
-                { label: 'formato', value: 'archivo' },
-                { label: 'estado', value: 'en proceso' },
-                { label: 'versión', value: '∞' },
-                { label: 'origen', value: 'argentina' },
-                { label: 'tipo', value: 'personal' },
-                { label: 'acceso', value: 'abierto' },
-              ].map(item => (
-                <div key={item.label} className="bg-black p-4 sm:p-5 group hover:bg-white/[0.03] transition-colors">
-                  <div className="font-mono text-white/18 text-[10px] tracking-[0.35em] uppercase mb-2">{item.label}</div>
-                  <div className="font-mono text-white/60 text-xs sm:text-sm lowercase group-hover:text-red-500 transition-colors duration-300">
+            {/* Grid de datos — celdas editables */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-px" style={{ background: 'rgba(255,255,255,0.08)' }}>
+              {aboutDataGrid.map(item => (
+                <div key={item.label} className="bg-black p-4 sm:p-5 group hover:bg-white/[0.05] transition-colors">
+                  <div className="font-mono text-white/55 text-[10px] tracking-[0.35em] uppercase mb-2">{item.label}</div>
+                  <div className="font-mono text-white/85 text-xs sm:text-sm lowercase group-hover:text-red-500 transition-colors duration-300">
                     {item.value}
                   </div>
                 </div>
@@ -734,9 +796,9 @@ algunos archivos solo necesitan existir.`,
 
             {/* Bloque cita */}
             <div className="relative pl-6">
-              <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-red-500/35 to-transparent" />
-              <p className="font-mono text-white/25 text-xs sm:text-sm leading-loose lowercase italic">
-                // esto no es un portfolio.<br />es un archivo de mi cabeza.
+              <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-red-500/50 to-transparent" />
+              <p className="font-mono text-white/60 text-xs sm:text-sm leading-loose lowercase italic whitespace-pre-line">
+                {aboutQuote}
               </p>
             </div>
 
@@ -744,9 +806,9 @@ algunos archivos solo necesitan existir.`,
         </div>
 
         {/* Footer decorativo */}
-        <div className="mt-24 sm:mt-32 pt-8 border-t border-white/5 flex justify-between items-center">
-          <span className="font-mono text-white/12 text-xs tracking-widest">DINAMARCA</span>
-          <span className="font-mono text-white/12 text-xs tracking-widest">2025</span>
+        <div className="mt-24 sm:mt-32 pt-8 border-t border-white/15 flex justify-between items-center">
+          <span className="font-mono text-white/40 text-xs tracking-widest">{footerBrand}</span>
+          <span className="font-mono text-white/40 text-xs tracking-widest">2025</span>
         </div>
 
       </div>
@@ -762,19 +824,19 @@ algunos archivos solo necesitan existir.`,
         {/* Header con conteo */}
         <div className="flex items-center gap-4 mb-4">
           <div className="h-px flex-1 bg-gradient-to-r from-red-500/50 to-transparent" />
-          <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">publicaciones</span>
+          <span className="font-mono text-white/55 text-xs tracking-[0.4em] uppercase">publicaciones</span>
           <div className="h-px flex-1 bg-gradient-to-l from-red-500/50 to-transparent" />
         </div>
         <div className="flex justify-end mb-16 sm:mb-20">
-          <span className="font-mono text-white/15 text-xs tracking-widest">{String(visibles.length).padStart(2,'0')} entradas</span>
+          <span className="font-mono text-white/78 text-xs tracking-widest">{String(visibles.length).padStart(2,'0')} entradas</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px" style={{ background: 'rgba(255,255,255,0.04)' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px" style={{ background: 'rgba(255,255,255,0.08)' }}>
           {visibles.map((pub, i) => (
             <article
               key={pub.id}
               onClick={() => setSelectedPublication(pub)}
-              className="group cursor-pointer bg-black hover:bg-white/[0.025] transition-colors duration-300 flex flex-col border border-transparent hover:border-red-500 relative"
+              className="group cursor-pointer bg-black hover:bg-white/[0.05] transition-colors duration-300 flex flex-col border border-transparent hover:border-red-500 relative"
             >
               {/* Imagen */}
               <div className="relative overflow-hidden" style={{ height: '200px' }}>
@@ -784,21 +846,21 @@ algunos archivos solo necesitan existir.`,
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80 group-hover:opacity-100"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
-                <div className="absolute top-3 right-3 font-mono text-white/20 text-xs tabular-nums">
+                <div className="absolute top-3 right-3 font-mono text-white/95 text-xs tabular-nums">
                   {String(i + 1).padStart(2, '0')}
                 </div>
               </div>
 
               {/* Contenido */}
               <div className="p-5 flex flex-col flex-1">
-                <div className="font-mono text-white/20 text-[10px] tracking-widest uppercase mb-3">{pub.date}</div>
-                <h2 className="font-mono text-white/90 text-sm leading-snug lowercase mb-4 flex-1 group-hover:text-white transition-colors">
+                <div className="font-mono text-white/95 text-[10px] tracking-widest uppercase mb-3">{pub.date}</div>
+                <h2 className="font-mono text-white/95 text-sm leading-snug lowercase mb-4 flex-1 group-hover:text-white transition-colors">
                   {pub.title}
                 </h2>
-                <p className="font-mono text-white/35 text-xs leading-relaxed lowercase mb-5 line-clamp-2">
+                <p className="font-mono text-white/78 text-xs leading-relaxed lowercase mb-5 line-clamp-2">
                   {pub.preview}
                 </p>
-                <div className="flex items-center gap-2 font-mono text-xs text-white/25 group-hover:text-red-500 transition-colors duration-300">
+                <div className="flex items-center gap-2 font-mono text-xs text-white/50 group-hover:text-red-500 transition-colors duration-300">
                   <span className="h-px bg-current transition-all duration-300" style={{ width: '16px' }}
                     onMouseEnter={e => e.currentTarget.style.width='32px'}
                     onMouseLeave={e => e.currentTarget.style.width='16px'} />
@@ -810,15 +872,15 @@ algunos archivos solo necesitan existir.`,
         </div>
 
         {visibles.length === 0 && (
-          <div className="text-center font-mono text-white/15 text-xs py-24 tracking-widest">
+          <div className="text-center font-mono text-white/78 text-xs py-24 tracking-widest">
             — sin publicaciones aún —
           </div>
         )}
 
         {/* Footer decorativo */}
-        <div className="mt-16 pt-8 border-t border-white/5 flex justify-between items-center">
-          <span className="font-mono text-white/12 text-xs tracking-widest">DINAMARCA</span>
-          <span className="font-mono text-white/12 text-xs tracking-widest">2025</span>
+        <div className="mt-16 pt-8 border-t border-white/12 flex justify-between items-center">
+          <span className="font-mono text-white/55 text-xs tracking-widest">DINAMARCA</span>
+          <span className="font-mono text-white/55 text-xs tracking-widest">2025</span>
         </div>
       </div>
 
@@ -833,14 +895,14 @@ algunos archivos solo necesitan existir.`,
             onClick={e => e.stopPropagation()}
           >
             {/* Barra superior con close */}
-            <div className="sticky top-0 z-10 bg-black/95 backdrop-blur-md border-b border-white/8">
+            <div className="sticky top-0 z-10 bg-black/95 backdrop-blur-md border-b border-white/15">
               <div className="max-w-4xl mx-auto px-6 sm:px-10 py-4 flex items-center justify-between">
-                <span className="font-mono text-white/25 text-xs tracking-widest uppercase">
+                <span className="font-mono text-white/50 text-xs tracking-widest uppercase">
                   publicaciones
                 </span>
                 <button
                   onClick={() => setSelectedPublication(null)}
-                  className="font-mono text-white/40 hover:text-white text-xs tracking-widest uppercase transition-colors flex items-center gap-2"
+                  className="font-mono text-white/65 hover:text-white text-xs tracking-widest uppercase transition-colors flex items-center gap-2"
                 >
                   <span className="h-px w-4 bg-white/40" />
                   cerrar
@@ -875,7 +937,7 @@ algunos archivos solo necesitan existir.`,
 
               {/* Contenido */}
               <div
-                className="font-mono text-white/70 text-sm sm:text-base leading-[2] lowercase space-y-6"
+                className="font-mono text-white/95 text-sm sm:text-base leading-[2] lowercase space-y-6"
                 dangerouslySetInnerHTML={{ __html: renderPublicationContent(selectedPublication.content) }}
               />
 
@@ -900,15 +962,15 @@ algunos archivos solo necesitan existir.`,
               )}
 
               {/* Pie de publicación */}
-              <div className="mt-16 sm:mt-20 pt-8 border-t border-white/8 flex items-center justify-between">
+              <div className="mt-16 sm:mt-20 pt-8 border-t border-white/15 flex items-center justify-between">
                 <button
                   onClick={() => setSelectedPublication(null)}
-                  className="font-mono text-white/30 text-xs tracking-widest uppercase hover:text-red-500 transition-colors flex items-center gap-3"
+                  className="font-mono text-white/55 text-xs tracking-widest uppercase hover:text-red-500 transition-colors flex items-center gap-3"
                 >
                   <span className="h-px w-6 bg-current" />
                   volver
                 </button>
-                <span className="font-mono text-white/15 text-xs tracking-widest">DINAMARCA</span>
+                <span className="font-mono text-white/78 text-xs tracking-widest">DINAMARCA</span>
               </div>
 
             </div>
@@ -995,19 +1057,19 @@ algunos archivos solo necesitan existir.`,
 
           <div className="flex items-center gap-4 mb-4">
             <div className="h-px flex-1 bg-gradient-to-r from-red-500/50 to-transparent" />
-            <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">multimedia</span>
+            <span className="font-mono text-white/55 text-xs tracking-[0.4em] uppercase">multimedia</span>
             <div className="h-px flex-1 bg-gradient-to-l from-red-500/50 to-transparent" />
           </div>
           <div className="flex justify-end mb-12">
-            <span className="font-mono text-white/15 text-xs tracking-widest">{String(allImages.length).padStart(2,'0')} imágenes</span>
+            <span className="font-mono text-white/78 text-xs tracking-widest">{String(allImages.length).padStart(2,'0')} imágenes</span>
           </div>
 
           {allImages.length === 0 ? (
-            <div className="text-center font-mono text-white/15 text-xs py-24 tracking-widest">
+            <div className="text-center font-mono text-white/78 text-xs py-24 tracking-widest">
               — sin imágenes aún —
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-px" style={{ background: 'rgba(255,255,255,0.04)' }}>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-px" style={{ background: 'rgba(255,255,255,0.08)' }}>
               {allImages.map((item, i) => (
                 <div
                   key={item.id}
@@ -1026,7 +1088,7 @@ algunos archivos solo necesitan existir.`,
                   {/* Borde rojo */}
                   <div className="absolute inset-0 border border-transparent group-hover:border-red-500/50 transition-colors duration-300" />
                   {/* Número */}
-                  <div className="absolute top-3 left-3 font-mono text-white/20 text-[10px] tabular-nums group-hover:text-white/50 transition-colors">
+                  <div className="absolute top-3 left-3 font-mono text-white/95 text-[10px] tabular-nums group-hover:text-white/50 transition-colors">
                     {String(i + 1).padStart(2, '0')}
                   </div>
                   {/* Info en hover */}
@@ -1038,9 +1100,9 @@ algunos archivos solo necesitan existir.`,
             </div>
           )}
 
-          <div className="mt-16 pt-8 border-t border-white/5 flex justify-between items-center">
-            <span className="font-mono text-white/12 text-xs tracking-widest">DINAMARCA</span>
-            <span className="font-mono text-white/12 text-xs tracking-widest">2025</span>
+          <div className="mt-16 pt-8 border-t border-white/12 flex justify-between items-center">
+            <span className="font-mono text-white/55 text-xs tracking-widest">DINAMARCA</span>
+            <span className="font-mono text-white/55 text-xs tracking-widest">2025</span>
           </div>
         </div>
 
@@ -1054,7 +1116,7 @@ algunos archivos solo necesitan existir.`,
               <div className="mt-6 flex items-center justify-between">
                 <div>
                   <div className="font-mono text-white text-sm lowercase">{selectedMedia.title}</div>
-                  <div className="font-mono text-white/30 text-xs mt-1 lowercase">{selectedMedia.desc}</div>
+                  <div className="font-mono text-white/55 text-xs mt-1 lowercase">{selectedMedia.desc}</div>
                 </div>
                 <button
                   onClick={() => {
@@ -1083,21 +1145,21 @@ algunos archivos solo necesitan existir.`,
 
         <div className="flex items-center gap-4 mb-4">
           <div className="h-px flex-1 bg-gradient-to-r from-red-500/50 to-transparent" />
-          <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">proyectos</span>
+          <span className="font-mono text-white/55 text-xs tracking-[0.4em] uppercase">proyectos</span>
           <div className="h-px flex-1 bg-gradient-to-l from-red-500/50 to-transparent" />
         </div>
         <div className="flex justify-end mb-16 sm:mb-20">
-          <span className="font-mono text-white/15 text-xs tracking-widest">{String(projects.length).padStart(2,'0')} proyectos</span>
+          <span className="font-mono text-white/78 text-xs tracking-widest">{String(projects.length).padStart(2,'0')} proyectos</span>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px" style={{ background: 'rgba(255,255,255,0.04)' }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px" style={{ background: 'rgba(255,255,255,0.08)' }}>
           {projects.map((project, i) => (
             <div
               key={project.id}
               onClick={() => {
                 if (project.link && project.link !== '#') window.open(project.link, '_blank');
               }}
-              className="bg-black hover:bg-white/[0.02] border border-transparent hover:border-red-500 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center p-8 sm:p-12 group relative overflow-hidden"
+              className="bg-black hover:bg-white/[0.06] border border-transparent hover:border-red-500 transition-all duration-300 cursor-pointer flex flex-col items-center justify-center p-8 sm:p-12 group relative overflow-hidden"
               style={{ minHeight: '260px' }}
             >
               {/* Número fondo */}
@@ -1115,20 +1177,20 @@ algunos archivos solo necesitan existir.`,
                 </div>
               )}
 
-              <h3 className="font-mono text-white/80 text-sm mb-1 lowercase text-center group-hover:text-white transition-colors">
+              <h3 className="font-mono text-white/92 text-sm mb-1 lowercase text-center group-hover:text-white transition-colors">
                 {project.name}
               </h3>
               <p className="font-mono text-red-500/40 text-[10px] lowercase mb-4 text-center tracking-[0.3em] uppercase group-hover:text-red-500/70 transition-colors">
                 {project.type}
               </p>
-              <p className="font-mono text-white/25 text-xs lowercase text-center leading-relaxed line-clamp-2 max-w-[200px] group-hover:text-white/40 transition-colors">
+              <p className="font-mono text-white/50 text-xs lowercase text-center leading-relaxed line-clamp-2 max-w-[200px] group-hover:text-white/65 transition-colors">
                 {project.description}
               </p>
 
               {project.link && project.link !== '#' && (
                 <div className="mt-6 flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <span className="h-px w-4 bg-red-500/60" />
-                  <span className="font-mono text-white/30 text-[10px] tracking-widest uppercase">abrir</span>
+                  <span className="font-mono text-white/55 text-[10px] tracking-widest uppercase">abrir</span>
                 </div>
               )}
             </div>
@@ -1136,14 +1198,14 @@ algunos archivos solo necesitan existir.`,
         </div>
 
         {projects.length === 0 && (
-          <div className="text-center font-mono text-white/15 text-xs py-24 tracking-widest">
+          <div className="text-center font-mono text-white/78 text-xs py-24 tracking-widest">
             — sin proyectos aún —
           </div>
         )}
 
-        <div className="mt-16 pt-8 border-t border-white/5 flex justify-between items-center">
-          <span className="font-mono text-white/12 text-xs tracking-widest">DINAMARCA</span>
-          <span className="font-mono text-white/12 text-xs tracking-widest">2025</span>
+        <div className="mt-16 pt-8 border-t border-white/12 flex justify-between items-center">
+          <span className="font-mono text-white/55 text-xs tracking-widest">DINAMARCA</span>
+          <span className="font-mono text-white/55 text-xs tracking-widest">2025</span>
         </div>
       </div>
     </div>
@@ -1166,7 +1228,7 @@ algunos archivos solo necesitan existir.`,
           {/* Header */}
           <div className="flex items-center gap-4 mb-16 sm:mb-20">
             <div className="h-px flex-1 bg-gradient-to-r from-red-500/50 to-transparent" />
-            <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">contacto</span>
+            <span className="font-mono text-white/55 text-xs tracking-[0.4em] uppercase">contacto</span>
             <div className="h-px flex-1 bg-gradient-to-l from-red-500/50 to-transparent" />
           </div>
 
@@ -1174,19 +1236,19 @@ algunos archivos solo necesitan existir.`,
 
             {/* Columna izquierda: redes */}
             <div>
-              <div className="font-mono text-white/18 text-[10px] tracking-[0.4em] uppercase mb-8">redes</div>
+              <div className="font-mono text-white/65 text-[10px] tracking-[0.4em] uppercase mb-8">redes</div>
               <div className="space-y-0">
                 {Object.entries(socialLinks)
                   .filter(([p]) => !hiddenSocials[p])
                   .map(([platform, url], i) => (
                   <a key={platform} href={url} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center gap-4 py-4 border-b border-white/5 group transition-all"
+                    className="flex items-center gap-4 py-4 border-b border-white/12 group transition-all"
                   >
                     <span
                       className="flex-shrink-0 h-px transition-all duration-300 group-hover:bg-red-500"
                       style={{ width: '12px', background: 'rgba(255,255,255,0.15)' }}
                     />
-                    <span className="font-mono text-white/35 text-xs lowercase tracking-wider group-hover:text-white/70 transition-colors">
+                    <span className="font-mono text-white/78 text-xs lowercase tracking-wider group-hover:text-white/95 transition-colors">
                       {platform}
                     </span>
                   </a>
@@ -1208,46 +1270,46 @@ algunos archivos solo necesitan existir.`,
                 <form onSubmit={handleSubmit} className="space-y-8">
                   {/* Nombre */}
                   <div className="relative group">
-                    <label className="font-mono text-white/18 text-[10px] tracking-[0.35em] uppercase block mb-3">nombre</label>
+                    <label className="font-mono text-white/65 text-[10px] tracking-[0.35em] uppercase block mb-3">nombre</label>
                     <input
                       type="text"
                       placeholder="tu nombre"
                       value={formData.name}
                       onChange={e => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full bg-transparent border-b border-white/10 focus:border-red-500 py-3 font-mono text-white/80 text-sm lowercase focus:outline-none transition-colors placeholder:text-white/15"
+                      className="w-full bg-transparent border-b border-white/18 focus:border-red-500 py-3 font-mono text-white/92 text-sm lowercase focus:outline-none transition-colors placeholder:text-white/78"
                       required
                     />
                   </div>
 
                   {/* Email */}
                   <div className="relative group">
-                    <label className="font-mono text-white/18 text-[10px] tracking-[0.35em] uppercase block mb-3">email</label>
+                    <label className="font-mono text-white/65 text-[10px] tracking-[0.35em] uppercase block mb-3">email</label>
                     <input
                       type="email"
                       placeholder="tu@email.com"
                       value={formData.email}
                       onChange={e => setFormData({ ...formData, email: e.target.value })}
-                      className="w-full bg-transparent border-b border-white/10 focus:border-red-500 py-3 font-mono text-white/80 text-sm lowercase focus:outline-none transition-colors placeholder:text-white/15"
+                      className="w-full bg-transparent border-b border-white/18 focus:border-red-500 py-3 font-mono text-white/92 text-sm lowercase focus:outline-none transition-colors placeholder:text-white/78"
                       required
                     />
                   </div>
 
                   {/* Mensaje */}
                   <div className="relative group">
-                    <label className="font-mono text-white/18 text-[10px] tracking-[0.35em] uppercase block mb-3">mensaje</label>
+                    <label className="font-mono text-white/65 text-[10px] tracking-[0.35em] uppercase block mb-3">mensaje</label>
                     <textarea
                       placeholder="escribí lo que quieras"
                       value={formData.message}
                       onChange={e => setFormData({ ...formData, message: e.target.value })}
                       rows="6"
-                      className="w-full bg-white/[0.02] border border-white/8 focus:border-red-500 px-4 py-4 font-mono text-white/80 text-sm lowercase focus:outline-none resize-none transition-colors placeholder:text-white/15"
+                      className="w-full bg-white/[0.06] border border-white/15 focus:border-red-500 px-4 py-4 font-mono text-white/92 text-sm lowercase focus:outline-none resize-none transition-colors placeholder:text-white/78"
                       required
                     />
                   </div>
 
                   {/* Submit */}
                   <button type="submit"
-                    className="flex items-center gap-4 font-mono text-white/40 text-xs tracking-[0.35em] uppercase hover:text-white transition-colors group"
+                    className="flex items-center gap-4 font-mono text-white/65 text-xs tracking-[0.35em] uppercase hover:text-white transition-colors group"
                   >
                     <span className="h-px w-6 bg-red-500/60 group-hover:w-10 transition-all duration-300" />
                     enviar
@@ -1258,9 +1320,9 @@ algunos archivos solo necesitan existir.`,
           </div>
 
           {/* Footer decorativo */}
-          <div className="mt-24 sm:mt-32 pt-8 border-t border-white/5 flex justify-between items-center">
-            <span className="font-mono text-white/12 text-xs tracking-widest">DINAMARCA</span>
-            <span className="font-mono text-white/12 text-xs tracking-widest">2025</span>
+          <div className="mt-24 sm:mt-32 pt-8 border-t border-white/12 flex justify-between items-center">
+            <span className="font-mono text-white/55 text-xs tracking-widest">DINAMARCA</span>
+            <span className="font-mono text-white/55 text-xs tracking-widest">2025</span>
           </div>
         </div>
       </div>
@@ -1290,7 +1352,7 @@ algunos archivos solo necesitan existir.`,
       if (p.match(/\[instagram:(.+?)\|(.+?)\|(.+?)\]/)) {
         const [_, postUrl, imgUrl, username] = p.match(/\[instagram:(.+?)\|(.+?)\|(.+?)\]/);
         return `<a href="${postUrl}" target="_blank" class="block my-4 group">
-          <div class="relative overflow-hidden border border-white/10 hover:border-red-500/50 transition-all">
+          <div class="relative overflow-hidden border border-white/18 hover:border-red-500/50 transition-all">
             <img src="${imgUrl}" class="w-full" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
               <div>
@@ -1305,7 +1367,7 @@ algunos archivos solo necesitan existir.`,
       if (p.match(/\[twitter:(.+?)\|(.+?)\|(.+?)\]/)) {
         const [_, postUrl, imgUrl, username] = p.match(/\[twitter:(.+?)\|(.+?)\|(.+?)\]/);
         return `<a href="${postUrl}" target="_blank" class="block my-4 group">
-          <div class="relative overflow-hidden border border-white/10 hover:border-red-500/50 transition-all">
+          <div class="relative overflow-hidden border border-white/18 hover:border-red-500/50 transition-all">
             <img src="${imgUrl}" class="w-full" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
               <div>
@@ -1455,17 +1517,17 @@ algunos archivos solo necesitan existir.`,
         
         if (p.match(/\[instagram:(.+?)\|(.+?)\|(.+?)\]/)) {
           const [_, postUrl, imgUrl, username] = p.match(/\[instagram:(.+?)\|(.+?)\|(.+?)\]/);
-          return `<div class="my-4 border border-white/10 p-2">
+          return `<div class="my-4 border border-white/18 p-2">
             <img src="${imgUrl}" class="w-full mb-2" />
-            <div class="font-mono text-white/70 text-xs">${username} - click para ver post</div>
+            <div class="font-mono text-white/95 text-xs">${username} - click para ver post</div>
           </div>`;
         }
         
         if (p.match(/\[twitter:(.+?)\|(.+?)\|(.+?)\]/)) {
           const [_, postUrl, imgUrl, username] = p.match(/\[twitter:(.+?)\|(.+?)\|(.+?)\]/);
-          return `<div class="my-4 border border-white/10 p-2">
+          return `<div class="my-4 border border-white/18 p-2">
             <img src="${imgUrl}" class="w-full mb-2" />
-            <div class="font-mono text-white/70 text-xs">${username} - click para ver tweet</div>
+            <div class="font-mono text-white/95 text-xs">${username} - click para ver tweet</div>
           </div>`;
         }
         
@@ -1690,7 +1752,7 @@ algunos archivos solo necesitan existir.`,
       <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 sm:mb-12">
-            <h1 className="font-mono text-white/30 text-xs sm:text-sm tracking-widest">ADMIN PANEL</h1>
+            <h1 className="font-mono text-white/55 text-xs sm:text-sm tracking-widest">ADMIN PANEL</h1>
             <button 
               onClick={() => { setIsAdmin(false); setCurrentSection('home'); }}
               className="font-mono text-red-500 text-xs hover:underline"
@@ -1700,8 +1762,8 @@ algunos archivos solo necesitan existir.`,
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-2 sm:gap-4 mb-6 sm:mb-8 border-b border-white/10 overflow-x-auto">
-            {['about', 'redes', 'publicaciones', 'proyectos', 'multimedia', 'secciones', 'estadísticas', 'configuración', 'base de datos'].map(tab => (
+          <div className="flex gap-2 sm:gap-4 mb-6 sm:mb-8 border-b border-white/18 overflow-x-auto">
+            {['about', 'redes', 'publicaciones', 'proyectos', 'multimedia', 'secciones', 'diseño', 'estadísticas', 'configuración', 'base de datos'].map(tab => (
               <button type="button"
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -1721,7 +1783,7 @@ algunos archivos solo necesitan existir.`,
                 value={editingAbout}
                 onChange={(e) => setEditingAbout(e.target.value)}
                 rows="10"
-                className="w-full bg-white/5 border border-white/10 px-4 py-3 font-mono text-white lowercase focus:border-red-500 focus:outline-none resize-none"
+                className="w-full bg-white/5 border border-white/18 px-4 py-3 font-mono text-white lowercase focus:border-red-500 focus:outline-none resize-none"
               />
               <button type="button"
                 onClick={saveAbout}
@@ -1737,17 +1799,17 @@ algunos archivos solo necesitan existir.`,
             <div className="space-y-8">
               <div className="space-y-4">
                 {Object.entries(editingSocial).map(([platform, url]) => (
-                  <div key={platform} className="border border-white/10 p-4">
+                  <div key={platform} className="border border-white/18 p-4">
                     <div className="flex gap-4 items-center mb-3">
                       <input
                         value={platform}
                         disabled
-                        className="w-40 bg-white/5 border border-white/10 px-4 py-2 font-mono text-white/50 lowercase text-sm"
+                        className="w-40 bg-white/5 border border-white/18 px-4 py-2 font-mono text-white/50 lowercase text-sm"
                       />
                       <input
                         value={url}
                         onChange={(e) => setEditingSocial({...editingSocial, [platform]: e.target.value})}
-                        className="flex-1 bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none text-sm"
+                        className="flex-1 bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none text-sm"
                       />
                     </div>
                     <div className="flex gap-2">
@@ -1757,7 +1819,7 @@ algunos archivos solo necesitan existir.`,
                           setHiddenSocials(updated);
                           localStorage.setItem('dinamarca_hidden_socials', JSON.stringify(updated));
                         }}
-                        className="font-mono text-white/70 border border-white/10 px-4 py-2 hover:text-white hover:border-white/30 transition-all text-xs"
+                        className="font-mono text-white/95 border border-white/18 px-4 py-2 hover:text-white hover:border-white/30 transition-all text-xs"
                       >
                         {hiddenSocials[platform] ? 'mostrar' : 'ocultar'}
                       </button>
@@ -1772,20 +1834,20 @@ algunos archivos solo necesitan existir.`,
                 ))}
               </div>
 
-              <div className="border-t border-white/10 pt-8">
+              <div className="border-t border-white/18 pt-8">
                 <h3 className="font-mono text-white/50 text-sm mb-4">agregar nueva red</h3>
                 <div className="flex gap-4">
                   <input
                     placeholder="plataforma (ej: threads)"
                     value={newSocialPlatform}
                     onChange={(e) => setNewSocialPlatform(e.target.value)}
-                    className="w-40 bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                    className="w-40 bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                   />
                   <input
                     placeholder="url completa"
                     value={newSocialUrl}
                     onChange={(e) => setNewSocialUrl(e.target.value)}
-                    className="flex-1 bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                    className="flex-1 bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                   />
                   <button type="button"
                     onClick={addSocialLink}
@@ -1809,7 +1871,7 @@ algunos archivos solo necesitan existir.`,
           {activeTab === 'publicaciones' && (
             <div className="space-y-8">
               {/* Create new publication */}
-              <div className={`border p-6 space-y-4 ${editingPubId ? 'border-red-500/50 bg-red-500/5' : 'border-white/10'}`}>
+              <div className={`border p-6 space-y-4 ${editingPubId ? 'border-red-500/50 bg-red-500/5' : 'border-white/18'}`}>
                 <h3 className="font-mono text-white/50 text-sm mb-4">
                   {editingPubId ? '✏️ editando publicación' : 'crear nueva publicación'}
                 </h3>
@@ -1817,27 +1879,27 @@ algunos archivos solo necesitan existir.`,
                   placeholder="título"
                   value={newPubForm.title}
                   onChange={(e) => setNewPubForm({...newPubForm, title: e.target.value})}
-                  className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                  className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                 />
                 <input
                   placeholder="preview (máx 110 caracteres)"
                   value={newPubForm.preview}
                   onChange={(e) => setNewPubForm({...newPubForm, preview: e.target.value})}
                   maxLength={110}
-                  className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                  className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                 />
-                <div className="text-xs font-mono text-white/30 text-right">
+                <div className="text-xs font-mono text-white/55 text-right">
                   {newPubForm.preview.length}/110 caracteres
                 </div>
                 
                 {/* EDITOR AVANZADO */}
                 <div className="space-y-2">
                   {/* Toolbar */}
-                  <div className="flex gap-2 flex-wrap border border-white/10 p-2 bg-white/5">
+                  <div className="flex gap-2 flex-wrap border border-white/18 p-2 bg-white/5">
                     <button type="button"
                       type="button"
                       onClick={() => insertFormatting('**', '**')}
-                      className="font-mono text-white/70 hover:text-white px-3 py-1 text-xs border border-white/10 hover:border-red-500"
+                      className="font-mono text-white/95 hover:text-white px-3 py-1 text-xs border border-white/18 hover:border-red-500"
                       title="Negrita"
                     >
                       <strong>B</strong>
@@ -1845,7 +1907,7 @@ algunos archivos solo necesitan existir.`,
                     <button type="button"
                       type="button"
                       onClick={() => insertFormatting('*', '*')}
-                      className="font-mono text-white/70 hover:text-white px-3 py-1 text-xs border border-white/10 hover:border-red-500"
+                      className="font-mono text-white/95 hover:text-white px-3 py-1 text-xs border border-white/18 hover:border-red-500"
                       title="Cursiva"
                     >
                       <em>I</em>
@@ -1857,7 +1919,7 @@ algunos archivos solo necesitan existir.`,
                         const url = prompt('URL:');
                         if (text && url) insertFormatting(`[${text}](${url})`);
                       }}
-                      className="font-mono text-white/70 hover:text-white px-3 py-1 text-xs border border-white/10 hover:border-red-500"
+                      className="font-mono text-white/95 hover:text-white px-3 py-1 text-xs border border-white/18 hover:border-red-500"
                       title="Link"
                     >
                       🔗
@@ -1866,7 +1928,7 @@ algunos archivos solo necesitan existir.`,
                     <button type="button"
                       type="button"
                       onClick={() => insertEmbed('image')}
-                      className="font-mono text-white/70 hover:text-white px-3 py-1 text-xs border border-white/10 hover:border-red-500"
+                      className="font-mono text-white/95 hover:text-white px-3 py-1 text-xs border border-white/18 hover:border-red-500"
                       title="Imagen"
                     >
                       🖼️
@@ -1874,7 +1936,7 @@ algunos archivos solo necesitan existir.`,
                     <button type="button"
                       type="button"
                       onClick={() => insertEmbed('image2')}
-                      className="font-mono text-white/70 hover:text-white px-3 py-1 text-xs border border-white/10 hover:border-red-500"
+                      className="font-mono text-white/95 hover:text-white px-3 py-1 text-xs border border-white/18 hover:border-red-500"
                       title="2 Imágenes"
                     >
                       🖼️×2
@@ -1883,7 +1945,7 @@ algunos archivos solo necesitan existir.`,
                     <button type="button"
                       type="button"
                       onClick={() => insertEmbed('youtube')}
-                      className="font-mono text-white/70 hover:text-white px-3 py-1 text-xs border border-white/10 hover:border-red-500"
+                      className="font-mono text-white/95 hover:text-white px-3 py-1 text-xs border border-white/18 hover:border-red-500"
                       title="YouTube"
                     >
                       ▶️
@@ -1891,7 +1953,7 @@ algunos archivos solo necesitan existir.`,
                     <button type="button"
                       type="button"
                       onClick={() => insertEmbed('spotify')}
-                      className="font-mono text-white/70 hover:text-white px-3 py-1 text-xs border border-white/10 hover:border-red-500"
+                      className="font-mono text-white/95 hover:text-white px-3 py-1 text-xs border border-white/18 hover:border-red-500"
                       title="Spotify"
                     >
                       🎵
@@ -1899,7 +1961,7 @@ algunos archivos solo necesitan existir.`,
                     <button type="button"
                       type="button"
                       onClick={() => insertEmbed('instagram')}
-                      className="font-mono text-white/70 hover:text-white px-3 py-1 text-xs border border-white/10 hover:border-red-500"
+                      className="font-mono text-white/95 hover:text-white px-3 py-1 text-xs border border-white/18 hover:border-red-500"
                       title="Instagram"
                     >
                       📷
@@ -1907,7 +1969,7 @@ algunos archivos solo necesitan existir.`,
                     <button type="button"
                       type="button"
                       onClick={() => insertEmbed('twitter')}
-                      className="font-mono text-white/70 hover:text-white px-3 py-1 text-xs border border-white/10 hover:border-red-500"
+                      className="font-mono text-white/95 hover:text-white px-3 py-1 text-xs border border-white/18 hover:border-red-500"
                       title="Twitter"
                     >
                       🐦
@@ -1916,7 +1978,7 @@ algunos archivos solo necesitan existir.`,
                     <button type="button"
                       type="button"
                       onClick={() => setShowPreview(!showPreview)}
-                      className="font-mono text-white/70 hover:text-white px-3 py-1 text-xs border border-white/10 hover:border-red-500"
+                      className="font-mono text-white/95 hover:text-white px-3 py-1 text-xs border border-white/18 hover:border-red-500"
                     >
                       {showPreview ? 'editar' : 'preview'}
                     </button>
@@ -1925,7 +1987,7 @@ algunos archivos solo necesitan existir.`,
                   {/* Editor o Preview */}
                   {showPreview ? (
                     <div 
-                      className="w-full bg-white/5 border border-white/10 p-4 font-mono text-white text-sm leading-relaxed min-h-[200px]"
+                      className="w-full bg-white/5 border border-white/18 p-4 font-mono text-white text-sm leading-relaxed min-h-[200px]"
                       dangerouslySetInnerHTML={{ __html: renderPreview(newPubForm.content) }}
                     />
                   ) : (
@@ -1935,12 +1997,12 @@ algunos archivos solo necesitan existir.`,
                       value={newPubForm.content}
                       onChange={(e) => setNewPubForm({...newPubForm, content: e.target.value})}
                       rows="12"
-                      className="w-full bg-white/5 border border-white/10 px-4 py-3 font-mono text-white lowercase focus:border-red-500 focus:outline-none resize-none"
+                      className="w-full bg-white/5 border border-white/18 px-4 py-3 font-mono text-white lowercase focus:border-red-500 focus:outline-none resize-none"
                     />
                   )}
                   
                   {/* Guía rápida */}
-                  <div className="text-xs font-mono text-white/30 space-y-1">
+                  <div className="text-xs font-mono text-white/55 space-y-1">
                     <div>💡 **negrita** | *cursiva* | [texto](url)</div>
                     <div>🖼️ Usa los botones para insertar imágenes y embeds</div>
                   </div>
@@ -1950,7 +2012,7 @@ algunos archivos solo necesitan existir.`,
                   placeholder="url imagen hero (principal)"
                   value={newPubForm.heroImage}
                   onChange={(e) => setNewPubForm({...newPubForm, heroImage: e.target.value})}
-                  className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                  className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                 />
 
                 {/* Scheduled Date */}
@@ -1960,9 +2022,9 @@ algunos archivos solo necesitan existir.`,
                     type="datetime-local"
                     value={newPubForm.scheduledDate}
                     onChange={(e) => setNewPubForm({...newPubForm, scheduledDate: e.target.value})}
-                    className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white focus:border-red-500 focus:outline-none"
+                    className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white focus:border-red-500 focus:outline-none"
                   />
-                  <p className="font-mono text-white/30 text-xs">
+                  <p className="font-mono text-white/55 text-xs">
                     {newPubForm.scheduledDate && new Date(newPubForm.scheduledDate) > new Date() 
                       ? '📅 se publicará automáticamente en esta fecha' 
                       : 'dejá vacío para publicar ahora'}
@@ -1979,9 +2041,9 @@ algunos archivos solo necesitan existir.`,
                       ...newPubForm, 
                       tags: e.target.value.split(',').map(t => t.trim()).filter(t => t)
                     })}
-                    className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                    className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                   />
-                  <p className="font-mono text-white/30 text-xs">
+                  <p className="font-mono text-white/55 text-xs">
                     ayuda con SEO y para categorizar tu contenido
                   </p>
                 </div>
@@ -1990,7 +2052,7 @@ algunos archivos solo necesitan existir.`,
                 <div className="space-y-2">
                   <label className="font-mono text-white/50 text-xs">URL personalizada (opcional)</label>
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-white/30 text-xs">tu-sitio.com/</span>
+                    <span className="font-mono text-white/55 text-xs">tu-sitio.com/</span>
                     <input
                       placeholder="mi-articulo-genial"
                       value={newPubForm.slug || ''}
@@ -2003,10 +2065,10 @@ algunos archivos solo necesitan existir.`,
                           .replace(/^-|-$/g, '');
                         setNewPubForm({...newPubForm, slug});
                       }}
-                      className="flex-1 bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                      className="flex-1 bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                     />
                   </div>
-                  <p className="font-mono text-white/30 text-xs">
+                  <p className="font-mono text-white/55 text-xs">
                     dejá vacío para usar el ID automático
                   </p>
                 </div>
@@ -2014,7 +2076,7 @@ algunos archivos solo necesitan existir.`,
                 <div>
                   <button type="button"
                     onClick={addImageToNewPub}
-                    className="font-mono text-white/50 border border-white/10 px-4 py-2 hover:text-red-500 hover:border-red-500 transition-all text-sm"
+                    className="font-mono text-white/50 border border-white/18 px-4 py-2 hover:text-red-500 hover:border-red-500 transition-all text-sm"
                   >
                     + agregar imagen adicional
                   </button>
@@ -2035,7 +2097,7 @@ algunos archivos solo necesitan existir.`,
                   <button type="button"
                     type="button"
                     onClick={() => createNewPublication(true)}
-                    className="font-mono text-white/70 border border-white/10 px-6 py-3 hover:text-white hover:border-white/30 transition-all"
+                    className="font-mono text-white/95 border border-white/18 px-6 py-3 hover:text-white hover:border-white/30 transition-all"
                   >
                     guardar borrador
                   </button>
@@ -2055,16 +2117,16 @@ algunos archivos solo necesitan existir.`,
               </div>
 
               {/* Export/Import buttons */}
-              <div className="border-t border-white/10 pt-6 space-y-4">
+              <div className="border-t border-white/18 pt-6 space-y-4">
                 <h3 className="font-mono text-white/50 text-sm">backup & restore</h3>
                 <div className="flex gap-3">
                   <button type="button"
                     onClick={exportAllData}
-                    className="flex-1 font-mono text-white/70 border border-white/10 px-6 py-3 hover:text-white hover:border-white/30 transition-all text-sm"
+                    className="flex-1 font-mono text-white/95 border border-white/18 px-6 py-3 hover:text-white hover:border-white/30 transition-all text-sm"
                   >
                     ⬇️ exportar todo
                   </button>
-                  <label className="flex-1 font-mono text-white/70 border border-white/10 px-6 py-3 hover:text-white hover:border-white/30 transition-all text-sm text-center cursor-pointer">
+                  <label className="flex-1 font-mono text-white/95 border border-white/18 px-6 py-3 hover:text-white hover:border-white/30 transition-all text-sm text-center cursor-pointer">
                     ⬆️ importar backup
                     <input
                       type="file"
@@ -2074,7 +2136,7 @@ algunos archivos solo necesitan existir.`,
                     />
                   </label>
                 </div>
-                <p className="font-mono text-white/30 text-xs">
+                <p className="font-mono text-white/55 text-xs">
                   exportá todo tu contenido a un archivo JSON. importalo en cualquier dispositivo.
                 </p>
               </div>
@@ -2083,7 +2145,7 @@ algunos archivos solo necesitan existir.`,
               <div className="space-y-4">
                 <h3 className="font-mono text-white/50 text-sm">publicaciones existentes</h3>
                 {editingPubs.map((pub, idx) => (
-                  <div key={pub.id} className="border border-white/10 p-4">
+                  <div key={pub.id} className="border border-white/18 p-4">
                     <div className="flex justify-between items-start mb-3">
                       <div className="flex gap-3 items-start flex-1">
                         {/* Order arrows */}
@@ -2105,9 +2167,9 @@ algunos archivos solo necesitan existir.`,
                         </div>
                         <div className="flex-1">
                           <div className="font-mono text-white lowercase">{pub.title}</div>
-                          <div className="font-mono text-white/40 text-xs mt-1">{pub.date}</div>
+                          <div className="font-mono text-white/65 text-xs mt-1">{pub.date}</div>
                           {pub.tags && pub.tags.length > 0 && (
-                            <div className="font-mono text-white/30 text-xs mt-1">
+                            <div className="font-mono text-white/55 text-xs mt-1">
                               🏷️ {pub.tags.join(', ')}
                             </div>
                           )}
@@ -2139,7 +2201,7 @@ algunos archivos solo necesitan existir.`,
                           setEditingPubId(pub.id);
                           window.scrollTo({ top: 0, behavior: 'smooth' });
                         }}
-                        className="font-mono text-white/70 border border-white/10 px-4 py-2 hover:text-white hover:border-white/30 transition-all text-sm"
+                        className="font-mono text-white/95 border border-white/18 px-4 py-2 hover:text-white hover:border-white/30 transition-all text-sm"
                       >
                         editar
                       </button>
@@ -2152,7 +2214,7 @@ algunos archivos solo necesitan existir.`,
                           setPublicaciones(updated);
                           localStorage.setItem('dinamarca_publicaciones', JSON.stringify(updated));
                         }}
-                        className="font-mono text-white/70 border border-white/10 px-4 py-2 hover:text-white hover:border-white/30 transition-all text-sm"
+                        className="font-mono text-white/95 border border-white/18 px-4 py-2 hover:text-white hover:border-white/30 transition-all text-sm"
                       >
                         {pub.hidden ? 'mostrar' : 'ocultar'}
                       </button>
@@ -2173,32 +2235,32 @@ algunos archivos solo necesitan existir.`,
           {activeTab === 'proyectos' && (
             <div className="space-y-8">
               {/* Create new project */}
-              <div className="border border-white/10 p-6 space-y-4">
+              <div className="border border-white/18 p-6 space-y-4">
                 <h3 className="font-mono text-white/50 text-sm mb-4">crear nuevo proyecto</h3>
                 <input
                   placeholder="nombre del proyecto"
-                  className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                  className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                   id="newProjectName"
                 />
                 <input
                   placeholder="tipo (ej: podcast, web, etc)"
-                  className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                  className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                   id="newProjectType"
                 />
                 <textarea
                   placeholder="descripción breve"
                   rows="2"
-                  className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none resize-none"
+                  className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none resize-none"
                   id="newProjectDesc"
                 />
                 <input
                   placeholder="logo (emoji o símbolo, ej: ◉)"
-                  className="w-32 bg-white/5 border border-white/10 px-4 py-2 font-mono text-white focus:border-red-500 focus:outline-none"
+                  className="w-32 bg-white/5 border border-white/18 px-4 py-2 font-mono text-white focus:border-red-500 focus:outline-none"
                   id="newProjectLogo"
                 />
                 <input
                   placeholder="link del proyecto (url completa)"
-                  className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                  className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                   id="newProjectLink"
                 />
                 <button type="button"
@@ -2246,7 +2308,7 @@ algunos archivos solo necesitan existir.`,
               <div className="space-y-4">
                 <h3 className="font-mono text-white/50 text-sm">proyectos existentes</h3>
                 {editingProjects.map((project, idx) => (
-                  <div key={project.id} className="border border-white/10 p-4 space-y-3">
+                  <div key={project.id} className="border border-white/18 p-4 space-y-3">
                     <div className="flex justify-between items-start">
                       <div className="flex-1 space-y-3">
                         <input
@@ -2257,7 +2319,7 @@ algunos archivos solo necesitan existir.`,
                             setEditingProjects(updated);
                           }}
                           placeholder="nombre"
-                          className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                          className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                         />
                         <input
                           value={project.type}
@@ -2267,7 +2329,7 @@ algunos archivos solo necesitan existir.`,
                             setEditingProjects(updated);
                           }}
                           placeholder="tipo"
-                          className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                          className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                         />
                         <textarea
                           value={project.description}
@@ -2278,7 +2340,7 @@ algunos archivos solo necesitan existir.`,
                           }}
                           placeholder="descripción"
                           rows="2"
-                          className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none resize-none"
+                          className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none resize-none"
                         />
                         <div className="flex gap-3">
                           <input
@@ -2289,7 +2351,7 @@ algunos archivos solo necesitan existir.`,
                               updated[idx].logo = e.target.value;
                               setEditingProjects(updated);
                             }}
-                            className="w-32 bg-white/5 border border-white/10 px-4 py-2 font-mono text-white focus:border-red-500 focus:outline-none"
+                            className="w-32 bg-white/5 border border-white/18 px-4 py-2 font-mono text-white focus:border-red-500 focus:outline-none"
                           />
                           <input
                             placeholder="logo URL imagen (40x40px)"
@@ -2299,7 +2361,7 @@ algunos archivos solo necesitan existir.`,
                               updated[idx].logoImage = e.target.value;
                               setEditingProjects(updated);
                             }}
-                            className="flex-1 bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                            className="flex-1 bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                           />
                         </div>
                         <input
@@ -2310,7 +2372,7 @@ algunos archivos solo necesitan existir.`,
                             updated[idx].link = e.target.value;
                             setEditingProjects(updated);
                           }}
-                          className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                          className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                         />
                       </div>
                       <button type="button"
@@ -2343,22 +2405,22 @@ algunos archivos solo necesitan existir.`,
           {/* MULTIMEDIA TAB */}
           {activeTab === 'multimedia' && (
             <div className="space-y-8">
-              <div className="border border-white/10 p-6 space-y-4">
+              <div className="border border-white/18 p-6 space-y-4">
                 <h3 className="font-mono text-white/50 text-sm mb-4">agregar imagen</h3>
                 <input
                   placeholder="URL de la imagen"
                   id="newMediaUrl"
-                  className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                  className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                 />
                 <input
                   placeholder="título"
                   id="newMediaTitle"
-                  className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                  className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                 />
                 <input
                   placeholder="descripción"
                   id="newMediaDesc"
-                  className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                  className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                 />
                 <button type="button"
                   onClick={() => {
@@ -2393,15 +2455,15 @@ algunos archivos solo necesitan existir.`,
               <div className="space-y-4">
                 <h3 className="font-mono text-white/50 text-sm">imágenes actuales ({mediaItems.length})</h3>
                 {mediaItems.length === 0 ? (
-                  <div className="font-mono text-white/30 text-sm">no hay imágenes. agregá algunas arriba.</div>
+                  <div className="font-mono text-white/55 text-sm">no hay imágenes. agregá algunas arriba.</div>
                 ) : (
                   mediaItems.map((item, idx) => (
-                    <div key={item.id} className="border border-white/10 p-4 flex justify-between items-center">
+                    <div key={item.id} className="border border-white/18 p-4 flex justify-between items-center">
                       <div className="flex gap-4 items-center flex-1">
                         <img src={item.url} alt={item.title} className="w-16 h-16 object-cover" />
                         <div className="flex-1">
                           <div className="font-mono text-white lowercase">{item.title}</div>
-                          <div className="font-mono text-white/40 text-xs mt-1">{item.desc}</div>
+                          <div className="font-mono text-white/65 text-xs mt-1">{item.desc}</div>
                         </div>
                       </div>
                       <button type="button"
@@ -2426,14 +2488,14 @@ algunos archivos solo necesitan existir.`,
           {/* SECCIONES TAB */}
           {activeTab === 'secciones' && (
             <div className="space-y-6">
-              <div className="border border-white/10 p-6">
+              <div className="border border-white/18 p-6">
                 <h3 className="font-mono text-white/50 text-sm mb-4">visibilidad de secciones</h3>
-                <p className="font-mono text-white/30 text-xs mb-6">
+                <p className="font-mono text-white/55 text-xs mb-6">
                   desactivá las secciones que no querés que aparezcan en el menú
                 </p>
                 <div className="space-y-4">
                   {Object.entries(visibleSections).map(([section, visible]) => (
-                    <div key={section} className="flex items-center justify-between p-4 border border-white/10">
+                    <div key={section} className="flex items-center justify-between p-4 border border-white/18">
                       <span className="font-mono text-white lowercase">{section}</span>
                       <button type="button"
                         onClick={() => {
@@ -2457,9 +2519,113 @@ algunos archivos solo necesitan existir.`,
           )}
 
           {/* ESTADÍSTICAS TAB */}
+          {activeTab === 'diseño' && (
+            <div className="space-y-6">
+
+              {/* Ticker */}
+              <div className="border border-white/18 p-6 space-y-4">
+                <h3 className="font-mono text-white text-base mb-1 lowercase">🎞 ticker (about me)</h3>
+                <p className="font-mono text-white/55 text-xs mb-4">texto que corre horizontalmente en la sección about me</p>
+                <textarea
+                  rows={3}
+                  value={tickerText}
+                  onChange={e => {
+                    setTickerText(e.target.value);
+                    localStorage.setItem('dinamarca_ticker', e.target.value);
+                  }}
+                  className="w-full bg-white/5 border border-white/18 px-4 py-3 font-mono text-white text-xs focus:border-red-500 focus:outline-none resize-none"
+                />
+                <p className="font-mono text-white/40 text-xs">podés usar &amp;nbsp; para espacios y ◈ ◆ como separadores</p>
+              </div>
+
+              {/* About Quote */}
+              <div className="border border-white/18 p-6 space-y-4">
+                <h3 className="font-mono text-white text-base mb-1 lowercase">💬 cita final (about me)</h3>
+                <textarea
+                  rows={3}
+                  value={aboutQuote}
+                  onChange={e => {
+                    setAboutQuote(e.target.value);
+                    localStorage.setItem('dinamarca_about_quote', e.target.value);
+                  }}
+                  className="w-full bg-white/5 border border-white/18 px-4 py-3 font-mono text-white text-sm focus:border-red-500 focus:outline-none resize-none lowercase"
+                />
+              </div>
+
+              {/* About Tags */}
+              <div className="border border-white/18 p-6 space-y-4">
+                <h3 className="font-mono text-white text-base mb-1 lowercase">🏷 tags (columna izquierda, about me)</h3>
+                <p className="font-mono text-white/55 text-xs mb-2">uno por línea, se muestran en orden</p>
+                <textarea
+                  rows={7}
+                  value={aboutTags.join('\n')}
+                  onChange={e => {
+                    const tags = e.target.value.split('\n').map(t => t.trim()).filter(Boolean);
+                    setAboutTags(tags);
+                    localStorage.setItem('dinamarca_about_tags', JSON.stringify(tags));
+                  }}
+                  className="w-full bg-white/5 border border-white/18 px-4 py-3 font-mono text-white text-sm focus:border-red-500 focus:outline-none resize-none lowercase"
+                />
+              </div>
+
+              {/* About Data Grid */}
+              <div className="border border-white/18 p-6 space-y-4">
+                <h3 className="font-mono text-white text-base mb-1 lowercase">📋 grilla de datos (about me)</h3>
+                <p className="font-mono text-white/55 text-xs mb-4">cada fila es label:valor separado por :</p>
+                <textarea
+                  rows={8}
+                  value={aboutDataGrid.map(d => `${d.label}:${d.value}`).join('\n')}
+                  onChange={e => {
+                    const grid = e.target.value.split('\n').map(line => {
+                      const idx = line.indexOf(':');
+                      if (idx === -1) return null;
+                      return { label: line.slice(0, idx).trim(), value: line.slice(idx + 1).trim() };
+                    }).filter(Boolean);
+                    setAboutDataGrid(grid);
+                    localStorage.setItem('dinamarca_about_datagrid', JSON.stringify(grid));
+                  }}
+                  className="w-full bg-white/5 border border-white/18 px-4 py-3 font-mono text-white text-sm focus:border-red-500 focus:outline-none resize-none lowercase"
+                />
+                <p className="font-mono text-white/40 text-xs">ejemplo: formato:archivo</p>
+              </div>
+
+              {/* Footer Brand */}
+              <div className="border border-white/18 p-6 space-y-4">
+                <h3 className="font-mono text-white text-base mb-1 lowercase">🏷 marca en footer de secciones</h3>
+                <p className="font-mono text-white/55 text-xs mb-2">texto que aparece abajo a la izquierda en cada sección</p>
+                <input
+                  value={footerBrand}
+                  onChange={e => {
+                    setFooterBrand(e.target.value);
+                    localStorage.setItem('dinamarca_footer_brand', e.target.value);
+                  }}
+                  className="w-full bg-white/5 border border-white/18 px-4 py-3 font-mono text-white text-sm focus:border-red-500 focus:outline-none uppercase tracking-widest"
+                />
+              </div>
+
+              {/* Email de contacto */}
+              <div className="border border-white/18 p-6 space-y-4">
+                <h3 className="font-mono text-white text-base mb-1 lowercase">📨 email de contacto</h3>
+                <p className="font-mono text-white/55 text-xs mb-2">adónde llegan los mensajes del formulario (para futuro envío real)</p>
+                <input
+                  type="email"
+                  placeholder="tu@email.com"
+                  value={contactoEmail}
+                  onChange={e => {
+                    setContactoEmail(e.target.value);
+                    localStorage.setItem('dinamarca_contacto_email', e.target.value);
+                  }}
+                  className="w-full bg-white/5 border border-white/18 px-4 py-3 font-mono text-white text-sm focus:border-red-500 focus:outline-none lowercase"
+                />
+              </div>
+
+            </div>
+          )}
+
+          {/* ESTADÍSTICAS TAB */}
           {activeTab === 'estadísticas' && (
             <div className="space-y-6">
-              <div className="border border-white/10 p-6">
+              <div className="border border-white/18 p-6">
                 <h3 className="font-mono text-white text-lg mb-4 lowercase">📊 google analytics</h3>
                 <p className="font-mono text-white/50 text-sm mb-6">
                   conectá google analytics para ver estadísticas de tus visitantes
@@ -2467,9 +2633,9 @@ algunos archivos solo necesitan existir.`,
 
                 {!analyticsId ? (
                   <div className="space-y-4">
-                    <div className="bg-white/5 p-4 border border-white/10">
+                    <div className="bg-white/5 p-4 border border-white/18">
                       <h4 className="font-mono text-white text-sm mb-3">paso 1: crear cuenta</h4>
-                      <ol className="font-mono text-white/70 text-xs space-y-2 list-decimal list-inside">
+                      <ol className="font-mono text-white/95 text-xs space-y-2 list-decimal list-inside">
                         <li>Andá a <a href="https://analytics.google.com" target="_blank" className="text-red-500 hover:underline">analytics.google.com</a></li>
                         <li>Creá una cuenta gratis</li>
                         <li>Agregá una propiedad (tu sitio web)</li>
@@ -2477,7 +2643,7 @@ algunos archivos solo necesitan existir.`,
                       </ol>
                     </div>
 
-                    <div className="bg-white/5 p-4 border border-white/10">
+                    <div className="bg-white/5 p-4 border border-white/18">
                       <h4 className="font-mono text-white text-sm mb-3">paso 2: pegar tu ID acá</h4>
                       <input
                         type="text"
@@ -2487,9 +2653,9 @@ algunos archivos solo necesitan existir.`,
                           setAnalyticsId(e.target.value);
                           localStorage.setItem('dinamarca_analytics_id', e.target.value);
                         }}
-                        className="w-full bg-white/5 border border-white/10 px-4 py-3 font-mono text-white focus:border-red-500 focus:outline-none"
+                        className="w-full bg-white/5 border border-white/18 px-4 py-3 font-mono text-white focus:border-red-500 focus:outline-none"
                       />
-                      <p className="font-mono text-white/40 text-xs mt-2">
+                      <p className="font-mono text-white/65 text-xs mt-2">
                         ejemplo: G-1234567890
                       </p>
                     </div>
@@ -2501,7 +2667,7 @@ algunos archivos solo necesitan existir.`,
                       <div className="font-mono text-white/50 text-xs">ID: {analyticsId}</div>
                     </div>
 
-                    <div className="bg-white/5 p-4 border border-white/10">
+                    <div className="bg-white/5 p-4 border border-white/18">
                       <h4 className="font-mono text-white text-sm mb-3">ver tus estadísticas</h4>
                       <a 
                         href="https://analytics.google.com" 
@@ -2510,7 +2676,7 @@ algunos archivos solo necesitan existir.`,
                       >
                         abrir google analytics →
                       </a>
-                      <p className="font-mono text-white/40 text-xs mt-3">
+                      <p className="font-mono text-white/65 text-xs mt-3">
                         ahí vas a ver: visitas, países, tiempo en página, dispositivos, y más
                       </p>
                     </div>
@@ -2535,7 +2701,7 @@ algunos archivos solo necesitan existir.`,
           {/* CONFIGURACIÓN TAB */}
           {activeTab === 'configuración' && (
             <div className="space-y-6">
-              <div className="border border-white/10 p-6 space-y-6">
+              <div className="border border-white/18 p-6 space-y-6">
                 <h3 className="font-mono text-white text-lg mb-4 lowercase">⚙️ configuración del sitio</h3>
                 
                 {/* Site Name */}
@@ -2548,7 +2714,7 @@ algunos archivos solo necesitan existir.`,
                       setSiteConfig(updated);
                       localStorage.setItem('dinamarca_site_config', JSON.stringify(updated));
                     }}
-                    className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                    className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                   />
                 </div>
 
@@ -2563,10 +2729,10 @@ algunos archivos solo necesitan existir.`,
                       setSiteConfig(updated);
                       localStorage.setItem('dinamarca_site_config', JSON.stringify(updated));
                     }}
-                    className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                    className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                   />
                   {siteConfig.logoUrl && (
-                    <img src={siteConfig.logoUrl} alt="preview" className="w-12 h-12 object-contain border border-white/10 p-2" />
+                    <img src={siteConfig.logoUrl} alt="preview" className="w-12 h-12 object-contain border border-white/18 p-2" />
                   )}
                 </div>
 
@@ -2581,9 +2747,9 @@ algunos archivos solo necesitan existir.`,
                       setSiteConfig(updated);
                       localStorage.setItem('dinamarca_site_config', JSON.stringify(updated));
                     }}
-                    className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                    className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                   />
-                  <p className="font-mono text-white/30 text-xs">
+                  <p className="font-mono text-white/55 text-xs">
                     el ícono que aparece en la pestaña del navegador
                   </p>
                 </div>
@@ -2599,9 +2765,9 @@ algunos archivos solo necesitan existir.`,
                       setSiteConfig(updated);
                       localStorage.setItem('dinamarca_site_config', JSON.stringify(updated));
                     }}
-                    className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                    className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                   />
-                  <p className="font-mono text-white/30 text-xs">
+                  <p className="font-mono text-white/55 text-xs">
                     {siteConfig.bioSeo.length}/60 caracteres
                   </p>
                 </div>
@@ -2618,16 +2784,16 @@ algunos archivos solo necesitan existir.`,
                       setSiteConfig(updated);
                       localStorage.setItem('dinamarca_site_config', JSON.stringify(updated));
                     }}
-                    className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none resize-none"
+                    className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none resize-none"
                   />
-                  <p className="font-mono text-white/30 text-xs">
+                  <p className="font-mono text-white/55 text-xs">
                     {siteConfig.metaDescription.length}/160 caracteres - esto aparece en google
                   </p>
                 </div>
               </div>
 
               {/* Security & Maintenance */}
-              <div className="border border-white/10 p-6 space-y-6">
+              <div className="border border-white/18 p-6 space-y-6">
                 <h3 className="font-mono text-white text-lg mb-4 lowercase">🔒 seguridad & mantenimiento</h3>
                 
                 {/* Maintenance Mode */}
@@ -2644,12 +2810,12 @@ algunos archivos solo necesitan existir.`,
                     className={`w-full font-mono px-6 py-3 transition-all ${
                       siteConfig.maintenanceMode 
                         ? 'bg-red-500 text-white hover:bg-red-600' 
-                        : 'bg-white/10 text-white/70 hover:bg-white/20'
+                        : 'bg-white/10 text-white/95 hover:bg-white/20'
                     }`}
                   >
                     {siteConfig.maintenanceMode ? '🔧 modo mantenimiento activo' : 'sitio público'}
                   </button>
-                  <p className="font-mono text-white/30 text-xs">
+                  <p className="font-mono text-white/55 text-xs">
                     activá esto para ocultar temporalmente el sitio mientras hacés cambios
                   </p>
                 </div>
@@ -2657,30 +2823,30 @@ algunos archivos solo necesitan existir.`,
                 {/* Change Password */}
                 <div className="space-y-4">
                   <label className="font-mono text-white/50 text-xs">cambiar contraseña admin</label>
-                  <div className="bg-white/5 border border-white/10 p-4 space-y-4">
+                  <div className="bg-white/5 border border-white/18 p-4 space-y-4">
                     <input
                       type="password"
                       placeholder="contraseña actual"
                       id="currentPasswordCheck"
-                      className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white focus:border-red-500 focus:outline-none"
+                      className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white focus:border-red-500 focus:outline-none"
                     />
                     <input
                       type="password"
                       placeholder="nueva contraseña"
                       id="newPassword1"
-                      className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white focus:border-red-500 focus:outline-none"
+                      className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white focus:border-red-500 focus:outline-none"
                     />
                     <input
                       type="password"
                       placeholder="repetí nueva contraseña"
                       id="newPassword2"
-                      className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white focus:border-red-500 focus:outline-none"
+                      className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white focus:border-red-500 focus:outline-none"
                     />
                     <input
                       type="email"
                       placeholder="tu email (para código 2FA)"
                       id="emailFor2FA"
-                      className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                      className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                     />
                     <button type="button"
                       onClick={async () => {
@@ -2729,7 +2895,7 @@ algunos archivos solo necesitan existir.`,
                     >
                       cambiar contraseña
                     </button>
-                    <p className="font-mono text-white/30 text-xs">
+                    <p className="font-mono text-white/55 text-xs">
                       ⚠️ importante: guardá tu nueva contraseña en un lugar seguro
                     </p>
                   </div>
@@ -2741,19 +2907,19 @@ algunos archivos solo necesitan existir.`,
           {/* BASE DE DATOS TAB */}
           {activeTab === 'base de datos' && (
             <div className="space-y-6">
-              <div className="border border-white/10 p-6 space-y-6">
+              <div className="border border-white/18 p-6 space-y-6">
                 <h3 className="font-mono text-white text-lg mb-4 lowercase">☁️ supabase - almacenamiento en la nube</h3>
                 
-                <p className="font-mono text-white/70 text-sm leading-relaxed">
+                <p className="font-mono text-white/95 text-sm leading-relaxed">
                   conectá supabase para guardar tus publicaciones en la nube y acceder desde cualquier dispositivo.
                 </p>
 
                 {!supabaseConfig.enabled ? (
                   <div className="space-y-6">
                     {/* Setup Instructions */}
-                    <div className="bg-white/5 border border-white/10 p-6 space-y-4">
+                    <div className="bg-white/5 border border-white/18 p-6 space-y-4">
                       <h4 className="font-mono text-white text-sm mb-3">📋 instrucciones de setup</h4>
-                      <ol className="font-mono text-white/70 text-xs space-y-3 list-decimal list-inside">
+                      <ol className="font-mono text-white/95 text-xs space-y-3 list-decimal list-inside">
                         <li>Andá a <a href="https://supabase.com" target="_blank" className="text-red-500 hover:underline">supabase.com</a> y creá cuenta gratis</li>
                         <li>Click en "New Project"</li>
                         <li>Elegí nombre y contraseña (guardala!)</li>
@@ -2764,7 +2930,7 @@ algunos archivos solo necesitan existir.`,
                         <li>En el SQL Editor de Supabase, pegá este código:</li>
                       </ol>
                       
-                      <div className="bg-black/50 p-4 border border-white/10 overflow-x-auto">
+                      <div className="bg-black/50 p-4 border border-white/18 overflow-x-auto">
                         <code className="font-mono text-green-500 text-xs whitespace-pre">
 {`CREATE TABLE publicaciones (
   id BIGINT PRIMARY KEY,
@@ -2808,7 +2974,7 @@ algunos archivos solo necesitan existir.`,
 );`);
                           alert('SQL copiado al portapapeles ✓');
                         }}
-                        className="w-full font-mono text-white/70 border border-white/10 px-4 py-2 hover:text-white hover:border-white/30 transition-all text-xs"
+                        className="w-full font-mono text-white/95 border border-white/18 px-4 py-2 hover:text-white hover:border-white/30 transition-all text-xs"
                       >
                         📋 copiar SQL
                       </button>
@@ -2823,7 +2989,7 @@ algunos archivos solo necesitan existir.`,
                           placeholder="https://tu-proyecto.supabase.co"
                           value={supabaseConfig.url}
                           onChange={(e) => setSupabaseConfig({...supabaseConfig, url: e.target.value})}
-                          className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
+                          className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
                         />
                       </div>
 
@@ -2834,7 +3000,7 @@ algunos archivos solo necesitan existir.`,
                           placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                           value={supabaseConfig.anonKey}
                           onChange={(e) => setSupabaseConfig({...supabaseConfig, anonKey: e.target.value})}
-                          className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
+                          className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
                         />
                       </div>
 
@@ -2871,9 +3037,9 @@ algunos archivos solo necesitan existir.`,
                       syncStatus === 'synced' ? 'border-green-500/30 bg-green-500/5' :
                       syncStatus === 'syncing' ? 'border-yellow-500/30 bg-yellow-500/5' :
                       syncStatus === 'error' ? 'border-red-500/30 bg-red-500/5' :
-                      'border-white/10'
+                      'border-white/18'
                     }`}>
-                      <div className="font-mono text-white/70 text-sm">
+                      <div className="font-mono text-white/95 text-sm">
                         Estado: {
                           syncStatus === 'synced' ? '✓ sincronizado' :
                           syncStatus === 'syncing' ? '⏳ sincronizando...' :
@@ -2918,7 +3084,7 @@ algunos archivos solo necesitan existir.`,
                       </button>
                     </div>
 
-                    <p className="font-mono text-white/30 text-xs">
+                    <p className="font-mono text-white/55 text-xs">
                       💡 tip: las publicaciones se sincronizan automáticamente cada vez que creás o editás
                     </p>
                   </div>
@@ -2948,21 +3114,21 @@ algunos archivos solo necesitan existir.`,
                     placeholder={`URL del ${embedModalType === 'twitter' ? 'tweet' : 'post de Instagram'}`}
                     value={embedData.postUrl || ''}
                     onChange={(e) => setEmbedData({...embedData, postUrl: e.target.value})}
-                    className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
+                    className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
                   />
                   <input
                     type="text"
                     placeholder="URL de la imagen"
                     value={embedData.imgUrl || ''}
                     onChange={(e) => setEmbedData({...embedData, imgUrl: e.target.value})}
-                    className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
+                    className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
                   />
                   <input
                     type="text"
                     placeholder="Usuario (ej: @username)"
                     value={embedData.username || ''}
                     onChange={(e) => setEmbedData({...embedData, username: e.target.value})}
-                    className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
+                    className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
                   />
                 </>
               ) : embedModalType === 'image2' ? (
@@ -2972,14 +3138,14 @@ algunos archivos solo necesitan existir.`,
                     placeholder="URL primera imagen"
                     value={embedData.url1 || ''}
                     onChange={(e) => setEmbedData({...embedData, url1: e.target.value})}
-                    className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
+                    className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
                   />
                   <input
                     type="text"
                     placeholder="URL segunda imagen"
                     value={embedData.url2 || ''}
                     onChange={(e) => setEmbedData({...embedData, url2: e.target.value})}
-                    className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
+                    className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
                   />
                 </>
               ) : (
@@ -2988,7 +3154,7 @@ algunos archivos solo necesitan existir.`,
                   placeholder="Pegá la URL acá"
                   value={embedData.url || ''}
                   onChange={(e) => setEmbedData({...embedData, url: e.target.value})}
-                  className="w-full bg-white/5 border border-white/10 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
+                  className="w-full bg-white/5 border border-white/18 px-4 py-2 font-mono text-white text-sm focus:border-red-500 focus:outline-none"
                   autoFocus
                 />
               )}
@@ -3017,151 +3183,115 @@ algunos archivos solo necesitan existir.`,
     );
   };
 
-  // Componente CLIMA
+  // Componente CLIMA — ciudades en constante externa para evitar recreación
   const Clima = () => {
     const [weatherData, setWeatherData] = useState({});
     const [loading, setLoading] = useState(true);
 
-    const ciudadesConFotos = [
-      { nombre: 'Buenos Aires', imagen: 'https://i.pinimg.com/1200x/2c/10/43/2c104376c2708609bdc442a63146247e.jpg', coords: '-34.6037,-58.3816' },
-      { nombre: 'Ushuaia', imagen: 'https://i.pinimg.com/1200x/a4/c1/a8/a4c1a858d01267fa2df562d1cb84f37c.jpg', coords: '-54.8019,-68.3030' },
-      { nombre: 'El Calafate', imagen: 'https://i.pinimg.com/1200x/87/b9/b4/87b9b413c6b3719971bf5d4c6f40e2ef.jpg', coords: '-50.3373,-72.2647' },
-      { nombre: 'Puerto Madryn', imagen: 'https://i.pinimg.com/1200x/15/00/e4/1500e4174f1246e6a221f37e680f23a9.jpg', coords: '-42.7692,-65.0391' },
-      { nombre: 'San Martin de los Andes', imagen: 'https://i.pinimg.com/736x/58/8f/ee/588fee60b3355853ef196f691973fee2.jpg', coords: '-40.1572,-71.3532' },
-      { nombre: 'Viedma', imagen: 'https://i.pinimg.com/736x/0b/66/e8/0b66e80ef5a58a19dc74b1038365f499.jpg', coords: '-40.8135,-62.9967' },
-      { nombre: 'Cuatral Co', imagen: 'https://i.pinimg.com/1200x/28/13/fc/2813fc0703ffa2de77a9055d9f7d0595.jpg', coords: '-37.9167,-68.3500' },
-      { nombre: 'Mar del Plata', imagen: 'https://i.pinimg.com/1200x/c6/0a/41/c60a411cc5cc25641f9b5b8b08ff5bb7.jpg', coords: '-38.0055,-57.5426' },
-      { nombre: 'Ramos Mejia', imagen: 'https://i.pinimg.com/1200x/f8/34/77/f83477dc37b8f54da13fe224fd0c2d43.jpg', coords: '-34.6417,-58.5647' },
-      { nombre: 'Trenque Lauquen', imagen: 'https://i.pinimg.com/1200x/d6/23/13/d62313512542dfa69e90b8e2590eb800.jpg', coords: '-35.9733,-62.7306' },
-      { nombre: 'Santa Rosa', imagen: 'https://i.pinimg.com/1200x/62/0c/52/620c52a60e8a01e73a6bc636ee3b739f.jpg', coords: '-36.6167,-64.2833' },
-      { nombre: 'Villa Mercedes', imagen: 'https://i.pinimg.com/736x/cc/25/36/cc25360301068e62dc6f515824c55e9c.jpg', coords: '-33.6758,-65.4603' },
-      { nombre: 'Mendoza', imagen: 'https://i.pinimg.com/736x/3d/42/6e/3d426e2055699351ab582bf8efe2c7d0.jpg', coords: '-32.8895,-68.8458' },
-      { nombre: 'Venado Tuerto', imagen: 'https://i.pinimg.com/1200x/8e/85/68/8e856850e4ad3538bb18b1c0c4c47846.jpg', coords: '-33.7456,-61.9689' },
-      { nombre: 'Rio Cuarto', imagen: 'https://i.pinimg.com/1200x/3a/ea/4c/3aea4c4fd23faf003452b97f82a266fb.jpg', coords: '-33.1239,-64.3494' },
-      { nombre: 'Villa Gral Belgrano', imagen: 'https://i.pinimg.com/1200x/50/04/8b/50048b76f2e7a876b8502e4479657c2d.jpg', coords: '-31.9772,-64.5597' },
-      { nombre: 'Concordia', imagen: 'https://i.pinimg.com/1200x/b8/3e/0a/b83e0ac7738a47c84bc79d16430d8217.jpg', coords: '-31.3933,-58.0208' },
-      { nombre: 'Chilecito', imagen: 'https://i.pinimg.com/1200x/bb/c6/5f/bbc65f94c4b43052c0c6ec86e943b6e6.jpg', coords: '-29.1639,-67.4981' },
-      { nombre: 'Curuzu Cuatia', imagen: 'https://i.pinimg.com/736x/b6/f6/5f/b6f65f6870ddf6d2222ea143c2aef59d.jpg', coords: '-29.7917,-58.0528' },
-      { nombre: 'Fiambala', imagen: 'https://i.pinimg.com/736x/b2/ff/3f/b2ff3fddfce674a52ad9c6d1eb99ad15.jpg', coords: '-27.6917,-67.6139' },
-      { nombre: 'Cafayate', imagen: 'https://i.pinimg.com/736x/b4/94/36/b494368665c2a6011e8697354b7b6697.jpg', coords: '-26.0733,-65.9789' },
-      { nombre: 'Purmamarca', imagen: 'https://i.pinimg.com/1200x/4d/fa/94/4dfa947b71227e0be3df8492159f579b.jpg', coords: '-23.7419,-65.4986' },
-      { nombre: 'Clorinda', imagen: 'https://i.pinimg.com/736x/59/9e/79/599e79a2b3e94edbce4e8dc87fa3e800.jpg', coords: '-25.2844,-57.7186' },
-      { nombre: 'Puerto Iguazu', imagen: 'https://i.pinimg.com/736x/82/24/56/822456f46023589086411105591e6e87.jpg', coords: '-25.5978,-54.5789' },
-      { nombre: 'Tartagal', imagen: 'https://i.pinimg.com/1200x/04/68/af/0468af79324a6e8beb736f61566a2bd5.jpg', coords: '-22.5164,-63.8014' },
-      { nombre: 'Islas Malvinas', imagen: 'https://i.pinimg.com/1200x/99/77/be/9977beb0331a3dd05940e218dad96ef7.jpg', coords: '-51.7963,-59.5236' },
-      { nombre: 'San Isidro', imagen: 'https://i.pinimg.com/736x/4d/32/1b/4d321b5f6293248cdf15936a3c07200b.jpg', coords: '-34.4708,-58.5278' },
-      { nombre: 'La Plata', imagen: 'https://i.pinimg.com/736x/c5/a7/21/c5a721baeddadca3e337a7ee5cc631b1.jpg', coords: '-34.9214,-57.9544' },
-      { nombre: 'Pehuajo', imagen: 'https://i.pinimg.com/736x/a0/a8/3b/a0a83be488519a7ddbd226de91eb9b87.jpg', coords: '-35.8119,-61.8981' },
-      { nombre: 'Base Marambio', imagen: 'https://i.pinimg.com/736x/9e/d6/f0/9ed6f02cd9aba22b33ac503c03ba4643.jpg', coords: '-64.2400,-56.6267' }
-    ];
-
     useEffect(() => {
+      let cancelled = false;
       const fetchWeather = async () => {
         const API_KEY = '770e8847a60823082fc5fa6fc57ed1bb';
-        const newWeatherData = {};
-
-        for (const ciudad of ciudadesConFotos) {
+        const results = {};
+        for (const ciudad of CIUDADES_CLIMA) {
           try {
             const [lat, lon] = ciudad.coords.split(',');
-            const response = await fetch(
+            const res = await fetch(
               `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${API_KEY}&units=metric&lang=es`
             );
-            const data = await response.json();
-            
+            const data = await res.json();
             if (data.main && data.weather) {
-              newWeatherData[ciudad.nombre] = {
+              results[ciudad.nombre] = {
                 temp: Math.round(data.main.temp),
-                description: data.weather[0].description
+                description: data.weather[0].description,
               };
+            } else {
+              results[ciudad.nombre] = { temp: '--', description: 'sin datos' };
             }
-          } catch (error) {
-            console.error(`Error fetching weather for ${ciudad.nombre}:`, error);
-            newWeatherData[ciudad.nombre] = {
-              temp: '--',
-              description: 'sin datos'
-            };
+          } catch {
+            results[ciudad.nombre] = { temp: '--', description: 'sin datos' };
           }
         }
-
-        setWeatherData(newWeatherData);
-        setLoading(false);
+        if (!cancelled) {
+          setWeatherData(results);
+          setLoading(false);
+        }
       };
-
       fetchWeather();
-      // Actualizar cada 10 minutos
       const interval = setInterval(fetchWeather, 600000);
-      return () => clearInterval(interval);
-    }, []);
+      return () => { cancelled = true; clearInterval(interval); };
+    }, []); // [] — se ejecuta UNA sola vez al montar
 
     const getColorForTemp = (temp) => {
-      if (typeof temp !== 'number') return '#9e9e9e';
-      if (temp <= 0) return '#00d4ff';
-      if (temp <= 10) return '#4dd0e1';
-      if (temp <= 18) return '#9e9e9e';
-      if (temp <= 25) return '#ffa726';
-      if (temp <= 32) return '#ff6b6b';
-      if (temp <= 40) return '#ef5350';
-      return '#d32f2f';
+      if (typeof temp !== 'number') return 'rgba(255,255,255,0.45)';
+      if (temp <= 0)  return '#7dd3fc';
+      if (temp <= 10) return '#93c5fd';
+      if (temp <= 18) return 'rgba(255,255,255,0.75)';
+      if (temp <= 25) return '#fcd34d';
+      if (temp <= 32) return '#fb923c';
+      if (temp <= 40) return '#f87171';
+      return '#ef4444';
     };
 
     return (
       <div className="min-h-screen bg-black pt-24 sm:pt-32 pb-32 sm:pb-24 px-4 sm:px-8">
         <div className="max-w-7xl mx-auto">
 
-          <div className="flex items-center gap-4 mb-16 sm:mb-20">
+          <div className="flex items-center gap-4 mb-4">
             <div className="h-px flex-1 bg-gradient-to-r from-red-500/50 to-transparent" />
-            <span className="font-mono text-white/30 text-xs tracking-[0.4em] uppercase">clima</span>
+            <span className="font-mono text-white/50 text-xs tracking-[0.4em] uppercase">clima</span>
             <div className="h-px flex-1 bg-gradient-to-l from-red-500/50 to-transparent" />
           </div>
-
-          {/* Subtítulo editorial */}
-          <div className="mb-12 flex items-start gap-6">
-            <div className="hidden lg:block">
-              <div className="font-mono text-white/8 text-7xl leading-none select-none">°</div>
-            </div>
-            <div>
-              <p className="font-mono text-white/20 text-xs lowercase tracking-widest leading-loose">
-                // temperaturas en tiempo real — argentina
-              </p>
-            </div>
+          <div className="flex justify-end mb-12">
+            <p className="font-mono text-white/78 text-xs lowercase tracking-widest">
+              // temperaturas en tiempo real — argentina
+            </p>
           </div>
 
           {loading ? (
-            <div className="text-center font-mono text-white/20 text-xs py-24 tracking-widest">
+            <div className="text-center font-mono text-white/65 text-xs py-24 tracking-widest">
               — cargando —
             </div>
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-px" style={{ background: 'rgba(255,255,255,0.04)' }}>
-              {ciudadesConFotos.map((ciudad, idx) => {
+            <div
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+              style={{ gap: '1px', background: 'rgba(255,255,255,0.10)' }}
+            >
+              {CIUDADES_CLIMA.map((ciudad) => {
                 const weather = weatherData[ciudad.nombre] || { temp: '--', description: 'sin datos' };
                 return (
                   <div
-                    key={idx}
+                    key={ciudad.nombre}
                     className="relative bg-black overflow-hidden group"
-                    style={{ height: '200px' }}
+                    style={{ height: '180px' }}
                   >
-                    {/* Imagen de fondo */}
                     <img
                       src={ciudad.imagen}
-                      alt={ciudad.nombre}
-                      className="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:opacity-45 transition-opacity duration-500 pointer-events-none"
+                      alt=""
+                      aria-hidden="true"
+                      className="absolute inset-0 w-full h-full object-cover opacity-30 group-hover:opacity-55 transition-opacity duration-500"
                       loading="lazy"
+                      style={{ pointerEvents: 'none' }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent pointer-events-none" />
-
-                    {/* Borde rojo en hover */}
-                    <div className="absolute inset-0 border border-transparent group-hover:border-red-500/50 transition-colors duration-300 pointer-events-none" />
-
-                    {/* Contenido */}
-                    <div className="absolute bottom-0 left-0 right-0 p-4">
-                      <div
-                        className="font-mono text-3xl leading-none mb-2"
-                        style={{ color: getColorForTemp(weather.temp) }}
-                      >
+                    <div
+                      className="absolute inset-0"
+                      style={{
+                        background: 'linear-gradient(to top, rgba(0,0,0,0.92) 40%, rgba(0,0,0,0.4) 100%)',
+                        pointerEvents: 'none',
+                      }}
+                    />
+                    {/* borde rojo hover */}
+                    <div
+                      className="absolute inset-0 border border-transparent group-hover:border-red-500/50 transition-colors duration-300"
+                      style={{ pointerEvents: 'none' }}
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
+                      <div className="font-mono text-2xl sm:text-3xl leading-none mb-1.5 font-semibold"
+                        style={{ color: getColorForTemp(weather.temp) }}>
                         {weather.temp}°
                       </div>
-                      <div className="font-mono text-white/80 text-xs lowercase leading-tight truncate">{ciudad.nombre}</div>
-                      <div className="font-mono text-white/25 text-xs lowercase mt-0.5 leading-tight truncate">{weather.description}</div>
+                      <div className="font-mono text-white/95 text-xs leading-tight truncate">{ciudad.nombre}</div>
+                      <div className="font-mono text-white/95 text-[10px] leading-tight truncate mt-0.5 capitalize">{weather.description}</div>
                     </div>
                   </div>
                 );
@@ -3169,10 +3299,9 @@ algunos archivos solo necesitan existir.`,
             </div>
           )}
 
-          {/* Footer decorativo */}
-          <div className="mt-16 pt-8 border-t border-white/5 flex justify-between items-center">
-            <span className="font-mono text-white/15 text-xs tracking-widest">DINAMARCA</span>
-            <span className="font-mono text-white/15 text-xs tracking-widest">2025</span>
+          <div className="mt-16 pt-8 border-t border-white/15 flex justify-between items-center">
+            <span className="font-mono text-white/50 text-xs tracking-widest">{footerBrand}</span>
+            <span className="font-mono text-white/50 text-xs tracking-widest">2025</span>
           </div>
         </div>
       </div>
@@ -3405,7 +3534,7 @@ algunos archivos solo necesitan existir.`,
             </p>
             <button type="button"
               onClick={() => setShowAdminLogin(true)}
-              className="font-mono text-white/30 hover:text-white text-xs transition-colors"
+              className="font-mono text-white/55 hover:text-white text-xs transition-colors"
             >
               acceso admin
             </button>
@@ -3434,7 +3563,7 @@ algunos archivos solo necesitan existir.`,
                     placeholder="contraseña"
                     value={adminPasswordInput}
                     onChange={(e) => setAdminPasswordInput(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 px-4 py-3 pr-12 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
+                    className="w-full bg-white/5 border border-white/18 px-4 py-3 pr-12 font-mono text-white lowercase focus:border-red-500 focus:outline-none"
                     autoFocus
                   />
                   <button type="button"
@@ -3465,7 +3594,7 @@ algunos archivos solo necesitan existir.`,
                   </button>
                 </div>
               </form>
-              <div className="mt-6 font-mono text-white/30 text-xs">
+              <div className="mt-6 font-mono text-white/55 text-xs">
                 contraseña por defecto: dinamarca2025
               </div>
             </div>
@@ -3480,7 +3609,7 @@ algunos archivos solo necesitan existir.`,
           onClick={() => setLightboxImage(null)}
         >
           <button 
-            className="absolute top-4 right-4 text-white/70 hover:text-white text-3xl font-mono"
+            className="absolute top-4 right-4 text-white/95 hover:text-white text-3xl font-mono"
             onClick={() => setLightboxImage(null)}
           >
             ×
