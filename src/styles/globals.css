@@ -1,0 +1,67 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Crimson+Pro:wght@300;400;600&family=JetBrains+Mono:wght@300;400&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  @apply bg-soda-night text-soda-warm;
+  font-family: 'Inter', sans-serif;
+  overflow-x: hidden;
+  position: relative;
+}
+
+.hoverable { cursor: pointer; }
+
+/* ===== VHS SCANLINE — only for premium episode cards ===== */
+@keyframes vhsScan { 0% { top: -100%; } 100% { top: 100%; } }
+
+/* ===== PULSE GLOW ===== */
+@keyframes pulseGlow { 0%, 100% { opacity: 0.4; transform: scale(1); } 50% { opacity: 0.8; transform: scale(1.05); } }
+
+/* ===== SCROLLBAR ===== */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: rgba(20, 24, 36, 0.5); }
+::-webkit-scrollbar-thumb { background: rgba(212, 197, 176, 0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(212, 197, 176, 0.5); }
+::selection { background: rgba(212, 197, 176, 0.3); color: #fef8ed; }
+
+/* ===== LOADER ===== */
+.loader {
+  width: 48px; height: 48px;
+  border: 3px solid rgba(212, 197, 176, 0.2);
+  border-bottom-color: rgba(212, 197, 176, 0.8);
+  border-radius: 50%; display: inline-block;
+  animation: rotation 1s linear infinite;
+}
+@keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* ===== RESPONSIVE ===== */
+@media (hover: none) and (pointer: coarse) {
+  .card-hover:hover { transform: none; }
+}
+
+@media (max-width: 767px) {
+  .backdrop-blur-sm, .backdrop-blur-md, .backdrop-blur-xl {
+    -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+  }
+  .overflow-y-auto { -webkit-overflow-scrolling: touch; }
+  .transition-all { transition-duration: 150ms !important; }
+  iframe { will-change: auto !important; contain: strict; }
+}
+
+@media (max-width: 640px) {
+  .font-serif { letter-spacing: 0.02em; }
+  section { overflow-x: hidden; }
+  footer .flex-wrap { gap: 8px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
